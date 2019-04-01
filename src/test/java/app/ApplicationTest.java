@@ -58,6 +58,8 @@ public class ApplicationTest {
       ResponseEntity<Map> entity = this.testRestTemplate.getForEntity(
             "http://localhost:" + this.port + "/user/1", Map.class);
 
+      System.err.println(entity.getBody().toString());
+
       Assert.assertEquals(HttpStatus.OK, entity.getStatusCode());
    }
 
