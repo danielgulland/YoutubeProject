@@ -8,7 +8,5 @@ cat > ../src/main/resources/application.properties << EOL
     spring.datasource.url=jdbc:mysql://localhost:3306/youtube_project
     spring.datasource.username=root
     spring.datasource.password=""
-    
-    spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.jdbc.Da
 }
 EOL
