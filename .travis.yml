@@ -21,6 +21,7 @@ before_script:
   - chmod +x travisMysqlSetup.sh
   - ./travisMysqlSetup.sh
   - mysql -uroot --password="" < initializeDB.sql
+  - mysql -uroot --password="" -e "select * from youtube_project.user"
   - cd ..
 
 script:
