@@ -1,3 +1,9 @@
+sudo: enabled
+
+branches:
+  only:
+    - master
+
 language: java
 install: true
 
