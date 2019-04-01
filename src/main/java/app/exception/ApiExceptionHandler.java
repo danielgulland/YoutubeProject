@@ -21,11 +21,13 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
       return ResponseEntity.status(error.getStatus()).body(buildErrorBody(error.getTag(), ex.getField()));
    }
 
+   /*
    @ExceptionHandler(Exception.class)
    public final ResponseEntity handleServerError(final Exception ex) {
       System.out.println(ex.toString());
       return ResponseEntity.status(SERVER_ERROR.getStatus()).body(buildErrorBody(SERVER_ERROR.getTag(), null));
    }
+   */
 
    private Map<String, String> buildErrorBody(final String tag, final String field) {
       Map<String, String> errorBody = new HashMap<>();
