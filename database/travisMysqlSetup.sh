@@ -1,8 +1,14 @@
 cat > ../src/main/resources/application.properties << EOL
 {
-    "host": "127.0.0.1",
-    "user": "root",
-    "password": "",
-    "database": "youtube_project"
+    server.port: 8000
+    management.server.port: 8001
+    management.server.address: 127.0.0.1
+
+    spring.jpa.hibernate.ddl-auto=none
+    spring.datasource.url=jdbc:mysql://localhost:3306/youtube_project
+    spring.datasource.username=root
+    spring.datasource.password=""
+    
+    spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.jdbc.Da
 }
 EOL
