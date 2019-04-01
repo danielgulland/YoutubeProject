@@ -8,5 +8,7 @@ cat > ../src/main/resources/application.properties << EOL
     spring.datasource.url=jdbc:mysql://localhost:3306/youtube_project
     spring.datasource.username=root
     spring.datasource.password=
+
+    spring.jpa.hibernate.naming.physical-strategy=org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
 }
 EOL
