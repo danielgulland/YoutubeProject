@@ -20,7 +20,6 @@ before_script:
   - cd database
   - chmod +x travisMysqlSetup.sh
   - ./travisMysqlSetup.sh
-  - cat ../src/main/resources/application.properties
   - mysql -uroot --password="" < initializeDB.sql
   - cd ..
 

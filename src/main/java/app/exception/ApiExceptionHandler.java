@@ -21,10 +21,18 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
       return ResponseEntity.status(error.getStatus()).body(buildErrorBody(error.getTag(), ex.getField()));
    }
 
+   /**
+    * Exception handler for Internal Server Error (500).
+    *
+    * @param ex exception that caused the error
+    * @return ResponseEntity with status 500 and internal error body
+    * @throws Exception testing
+    */
    @ExceptionHandler(Exception.class)
-   public final ResponseEntity handleServerError(final Exception ex) {
-      System.out.println(ex.toString());
-      return ResponseEntity.status(SERVER_ERROR.getStatus()).body(buildErrorBody(SERVER_ERROR.getTag(), null));
+   public final ResponseEntity handleServerError(final Exception ex) throws Exception {
+      //      System.out.println(ex.toString());
+      throw ex;
+      //      return ResponseEntity.status(SERVER_ERROR.getStatus()).body(buildErrorBody(SERVER_ERROR.getTag(), null));
    }
 
    private Map<String, String> buildErrorBody(final String tag, final String field) {
