@@ -1,8 +1,11 @@
 package app.validation;
 
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.HttpStatus;
@@ -14,7 +17,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class Validator {
 
-   private final Map<String, String> errors;
+   private final Map<String, List<String>> errors;
    private HttpStatus status = HttpStatus.OK;
 
    /**
@@ -25,7 +28,7 @@ public class Validator {
     * @param field the field to append to the error
     * @return true if the Validator has errors, false if there are no errors
     */
-   public boolean check(final boolean expression, final ValidationError error, final String field) {
+   public boolean check(final boolean expression, @NonNull final ValidationError error, final String field) {
       if (!expression) {
          addError(error, field);
       }
@@ -41,7 +44,7 @@ public class Validator {
     * @param field the field to append to the error
     * @return this Validator
     */
-   public Validator chain(final boolean expression, final ValidationError error, final String field) {
+   public Validator chain(final boolean expression, @NonNull final ValidationError error, final String field) {
       if (!expression) {
          addError(error, field);
       }
@@ -59,13 +62,29 @@ public class Validator {
    }
 
    /**
-    * Add the error to the Validator and set the response status.
+    * Add the error and field to the Validator and set the response status.
     *
     * @param error validation error containing tag and status
     * @param field the field to append to the error
     */
    private void addError(final ValidationError error, final String field) {
-      errors.put(error.getTag(), field);
+      List<String> fieldList;
+
+      /* Check if the errors map already contains this error.
+       * Get the existing list of fields if it does, otherwise create a new list. */
+      if (errors.containsKey(error.getTag())) {
+         fieldList = errors.get(error.getTag());
+      }
+      else {
+         fieldList = new ArrayList<>();
+      }
+
+      /* Don't add a field if it is null. */
+      if (field != null) {
+         fieldList.add(field);
+      }
+
+      errors.put(error.getTag(), fieldList);
       status = error.getStatus();
    }
 }
