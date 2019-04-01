@@ -34,3 +34,4 @@ CREATE TABLE Playlist_Song (
     REFERENCES Song (id)
 );
 
+INSERT INTO User (username, email, password_hash) VALUES ('test', 'test@test.com', 'test');
