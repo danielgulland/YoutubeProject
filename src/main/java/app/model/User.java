@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -35,6 +36,7 @@ public class User {
    private String email;
 
    @JsonIgnore
+   @ToString.Exclude
    @Column(name = "password_hash")
    private String passwordHash;
 }
