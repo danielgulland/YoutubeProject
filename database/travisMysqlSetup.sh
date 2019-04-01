@@ -7,6 +7,6 @@ cat > ../src/main/resources/application.properties << EOL
     spring.jpa.hibernate.ddl-auto=none
     spring.datasource.url=jdbc:mysql://localhost:3306/youtube_project
     spring.datasource.username=root
-    spring.datasource.password=""
+    spring.datasource.password=
 }
 EOL
