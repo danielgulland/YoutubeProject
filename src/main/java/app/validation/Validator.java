@@ -8,13 +8,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.context.annotation.Scope;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
+import com.google.common.collect.ImmutableMap;
+
 @Getter
 @RequiredArgsConstructor
 @Component
+@Scope("prototype")
 public class Validator {
 
    private final Map<String, List<String>> errors;
@@ -58,7 +62,7 @@ public class Validator {
     * @return ResponseEntity with the status and body based on the Validator
     */
    public ResponseEntity getResponseEntity() {
-      return ResponseEntity.status(status).body(errors.isEmpty() ? null : errors);
+      return ResponseEntity.status(status).body(errors.isEmpty() ? null : ImmutableMap.of("errors", errors));
    }
 
    /**
@@ -68,7 +72,7 @@ public class Validator {
     * @param field the field to append to the error
     */
    private void addError(final ValidationError error, final String field) {
-      List<String> fieldList;
+      final List<String> fieldList;
 
       /* Check if the errors map already contains this error.
        * Get the existing list of fields if it does, otherwise create a new list. */
