@@ -10,6 +10,8 @@ import org.junit.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import com.google.common.collect.ImmutableMap;
+
 public class ValidatorTest {
 
    private static final ValidationError ERROR = ValidationError.BAD_VALUE;
@@ -116,7 +118,7 @@ public class ValidatorTest {
 
       // Assert
       Assert.assertEquals(ERROR.getStatus(), response.getStatusCode());
-      Assert.assertEquals(validator.getErrors(), response.getBody());
+      Assert.assertEquals(ImmutableMap.of("errors", validator.getErrors()), response.getBody());
    }
 
    @Test(expected = NullPointerException.class)
