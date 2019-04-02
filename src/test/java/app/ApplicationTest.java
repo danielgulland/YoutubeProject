@@ -18,6 +18,7 @@ package app;
 
 import java.util.Map;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,7 +58,7 @@ public class ApplicationTest {
       ResponseEntity<Map> entity = this.testRestTemplate.getForEntity(
             "http://localhost:" + this.port + "/user/1", Map.class);
 
-      then(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
+      Assert.assertEquals(HttpStatus.OK, entity.getStatusCode());
    }
 
    @Test

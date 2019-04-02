@@ -23,7 +23,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 
    @ExceptionHandler(Exception.class)
    public final ResponseEntity handleServerError(final Exception ex) {
-      System.out.println(ex.toString());
+      System.err.println(ex.toString());
       return ResponseEntity.status(SERVER_ERROR.getStatus()).body(buildErrorBody(SERVER_ERROR.getTag(), null));
    }
 

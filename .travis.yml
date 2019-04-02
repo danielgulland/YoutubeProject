@@ -1,0 +1,27 @@
+sudo: enabled
+
+branches:
+  only:
+    - master
+
+language: java
+install: true
+
+jdk:
+  - oraclejdk8
+
+services:
+  - mysql
+
+before_install:
+  - chmod +x gradlew
+
+before_script:
+  - cd database
+  - chmod +x travisMysqlSetup.sh
+  - ./travisMysqlSetup.sh
+  - mysql -uroot --password="" < initializeDB.sql
+  - cd ..
+
+script:
+  - ./gradlew check
