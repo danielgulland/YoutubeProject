@@ -1,4 +1,4 @@
-sudo: enabled
+sudo: false
 
 branches:
   only:
@@ -25,3 +25,6 @@ before_script:
 
 script:
   - ./gradlew check
+
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
