@@ -253,5 +253,7 @@
         </module>
         <module name="CommentsIndentation"/>
         <module name="UnusedImports"/>
+        <module name="FinalParameters"/>
+        <module name="FinalLocalVariable" />
     </module>
 </module>
