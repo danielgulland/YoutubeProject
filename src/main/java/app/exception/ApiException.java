@@ -15,7 +15,7 @@ public class ApiException extends RuntimeException {
     * @param message the detail message
     * @param error ValidationError signifying the reason for the exception
     */
-   public ApiException(String message, ValidationError error) {
+   public ApiException(final String message, final ValidationError error) {
       super(message);
       this.error = error;
    }
@@ -27,7 +27,7 @@ public class ApiException extends RuntimeException {
     * @param error ValidationError signifying the reason for the exception
     * @param field the field that caused the problem
     */
-   public ApiException(String message, ValidationError error, String field) {
+   public ApiException(final String message, final ValidationError error, final String field) {
       super(message);
       this.error = error;
       this.field = field;
@@ -41,7 +41,7 @@ public class ApiException extends RuntimeException {
     * @param field the field that caused the problem
     * @param cause related exception that caused the exception
     */
-   public ApiException(String message, ValidationError error, String field, Throwable cause) {
+   public ApiException(final String message, final ValidationError error, final String field, final Throwable cause) {
       super(message, cause);
       this.error = error;
       this.field = field;

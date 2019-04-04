@@ -5,9 +5,8 @@ import app.exception.ApiException;
 import app.model.User;
 import app.validation.ValidationError;
 
+import java.util.List;
 import java.util.Optional;
-
-import javax.persistence.EntityExistsException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -35,7 +34,7 @@ public class UserService {
       throw new ApiException("User does not exist", ValidationError.NOT_FOUND, "user");
    }
 
-   public Iterable<User> getAllUsers() {
+   public List<User> getAllUsers() {
       return userDao.findAll();
    }
 
@@ -44,9 +43,9 @@ public class UserService {
     * Checks if a user already exists with the given username and password.
     *
     * @param user contains User information
-    * @throws EntityExistsException if User already exists
+    * @throws ApiException if User already exists
     */
-   public void createNewUser(final User user) throws EntityExistsException {
+   public void createNewUser(final User user) throws ApiException {
       if (userDao.findByUsernameOrEmail(user.getUsername(), user.getEmail()).isPresent()) {
          throw new ApiException("User already exists", ValidationError.DUPLICATE_USER);
       }

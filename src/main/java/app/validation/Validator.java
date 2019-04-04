@@ -9,16 +9,18 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.WebApplicationContext;
 
 import com.google.common.collect.ImmutableMap;
 
 @Getter
 @RequiredArgsConstructor
 @Component
-@Scope("prototype")
+@Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class Validator {
 
    private final Map<String, List<String>> errors;
