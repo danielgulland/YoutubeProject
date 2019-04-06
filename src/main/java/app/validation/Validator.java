@@ -32,7 +32,7 @@ public class Validator {
     * @param expression the expression to evaluate
     * @param error validation error to use if expression is false
     * @param field the field to append to the error
-    * @return true if the Validator has errors, false if there are no errors
+    * @return true if the Validator has no errors, false if there are errors
     */
    public boolean check(final boolean expression, @NonNull final ValidationError error, final String field) {
       if (!expression) {
