@@ -57,6 +57,18 @@ jacocoTestReport {
         csv.enabled false
         html.destination file("${buildDir}/reports/coverage")
     }
+
+    afterEvaluate {
+        classDirectories = files(classDirectories.files.collect {
+            fileTree(dir: it,
+                    exclude: [
+                            'app/request/**',
+                            'app/model/**',
+                            'app/Application*'
+                    ]
+            )
+        })
+    }
 }
 
 check.dependsOn jacocoTestReport
