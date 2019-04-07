@@ -6,6 +6,7 @@ import app.service.UserService;
 import app.validation.ValidationError;
 import app.validation.Validator;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,7 +31,7 @@ public class UserController {
     * Get a User by the user id.
     *
     * @param id user id
-    * @return Response with status 200 and User in the body
+    * @return Response with status 200 and User in the body for successful call, otherwise validation response
     */
    @GetMapping("/{id}")
    public ResponseEntity getUserById(@PathVariable final int id) {
@@ -47,11 +48,14 @@ public class UserController {
     * Create a new User given the Registration information.
     *
     * @param registrationModel information required to create a new user
-    * @return Response with status 200 and empty body
+    * @return Response with status 200 and empty body for successful call, otherwise validation response
     */
    @PostMapping()
    public ResponseEntity createNewUser(@RequestBody final RegistrationModel registrationModel) {
-      if (validator.check(registrationModel.getEmail().contains("@"), ValidationError.BAD_VALUE, "email")) {
+      if (validator.chain(StringUtils.isNotBlank(registrationModel.getEmail()), ValidationError.MISSING_FIELD, "email")
+            .chain(StringUtils.isNotBlank(registrationModel.getUsername()), ValidationError.MISSING_FIELD, "username")
+            .check(StringUtils.isNotBlank(registrationModel.getPassword()), ValidationError.MISSING_FIELD, "password")
+            && validator.check(registrationModel.getEmail().contains("@"), ValidationError.BAD_VALUE, "email")) {
          userService.createNewUser(buildUserFromRegistrationModel(registrationModel));
 
          return ResponseEntity.status(HttpStatus.OK).body(null);

@@ -113,7 +113,7 @@ public class UserServiceTest {
    }
 
    @Test
-   public void testCreateNewUser_UserAlreadyExists() {
+   public void testCreateNewUser_UserAlreadyExists_DuplicateUsername() {
       // Arrange
       final User user = buildUser();
       when(userDao.findByUsernameOrEmail(anyString(), anyString())).thenReturn(Optional.of(user));
@@ -127,7 +127,27 @@ public class UserServiceTest {
          verify(userDao).findByUsernameOrEmail(anyString(), anyString());
          verifyNoMoreInteractions(userDao);
 
-         Assert.assertEquals(ValidationError.DUPLICATE_USER, ex.getError());
+         Assert.assertEquals(ValidationError.DUPLICATE_USERNAME, ex.getError());
+         Assert.assertNull(ex.getField());
+         Assert.assertEquals("User already exists", ex.getMessage());
+      }
+   }
+
+   @Test
+   public void testCreateNewUser_UserAlreadyExists_DuplicateEmail() {
+      // Arrange
+      when(userDao.findByUsernameOrEmail(anyString(), anyString())).thenReturn(Optional.of(buildUser()));
+
+      try {
+         // Act
+         userService.createNewUser(new User(null, USERNAME + "1", EMAIL, PASSWORD));
+         fail("Exception not thrown");
+      } catch (ApiException ex) {
+         // Assert
+         verify(userDao).findByUsernameOrEmail(anyString(), anyString());
+         verifyNoMoreInteractions(userDao);
+
+         Assert.assertEquals(ValidationError.DUPLICATE_EMAIL, ex.getError());
          Assert.assertNull(ex.getField());
          Assert.assertEquals("User already exists", ex.getMessage());
       }
