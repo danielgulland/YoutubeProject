@@ -19,6 +19,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.verifyZeroInteractions;
@@ -85,12 +86,18 @@ public class UserControllerTest {
    @Test
    public void testCreateNewUser_Successful() {
       // Arrange
+      when(validator.chain(true, ValidationError.MISSING_FIELD, "email")).thenReturn(validator);
+      when(validator.chain(true, ValidationError.MISSING_FIELD, "username")).thenReturn(validator);
+      when(validator.check(true, ValidationError.MISSING_FIELD, "password")).thenReturn(true);
       when(validator.check(true, ValidationError.BAD_VALUE, "email")).thenReturn(true);
 
       // Act
       final ResponseEntity response = controller.createNewUser(buildRegistrationModel());
 
       // Assert
+      verify(validator).chain(true, ValidationError.MISSING_FIELD, "email");
+      verify(validator).chain(true, ValidationError.MISSING_FIELD, "username");
+      verify(validator).check(true, ValidationError.MISSING_FIELD, "password");
       verify(validator).check(true, ValidationError.BAD_VALUE, "email");
       verifyNoMoreInteractions(validator);
       verify(userService).createNewUser(any(User.class));
@@ -101,8 +108,35 @@ public class UserControllerTest {
    }
 
    @Test
+   public void testCreateNewUser_InvalidRegistrationModel() {
+      // Arrange
+      when(validator.chain(false, ValidationError.MISSING_FIELD, "email")).thenReturn(validator);
+      when(validator.chain(false, ValidationError.MISSING_FIELD, "username")).thenReturn(validator);
+      when(validator.check(false, ValidationError.MISSING_FIELD, "password")).thenReturn(false);
+      when(validator.getResponseEntity()).thenReturn(buildResponseEntity(HttpStatus.BAD_REQUEST));
+
+      // Act
+      final ResponseEntity response = controller.createNewUser(new RegistrationModel());
+
+      // Assert
+      verify(validator).chain(false, ValidationError.MISSING_FIELD, "email");
+      verify(validator).chain(false, ValidationError.MISSING_FIELD, "username");
+      verify(validator).check(false, ValidationError.MISSING_FIELD, "password");
+      verify(validator, times(0)).check(false, ValidationError.BAD_VALUE, "email");
+      verify(validator).getResponseEntity();
+      verifyNoMoreInteractions(validator);
+      verifyZeroInteractions(userService);
+
+      Assert.assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+      Assert.assertNull(response.getBody());
+   }
+
+   @Test
    public void testCreateNewUser_InvalidEmail() {
       // Arrange
+      when(validator.chain(true, ValidationError.MISSING_FIELD, "email")).thenReturn(validator);
+      when(validator.chain(true, ValidationError.MISSING_FIELD, "username")).thenReturn(validator);
+      when(validator.check(true, ValidationError.MISSING_FIELD, "password")).thenReturn(true);
       when(validator.check(false, ValidationError.BAD_VALUE, "email")).thenReturn(false);
       when(validator.getResponseEntity()).thenReturn(buildResponseEntity(HttpStatus.BAD_REQUEST));
 
@@ -112,6 +146,9 @@ public class UserControllerTest {
       final ResponseEntity response = controller.createNewUser(registrationModel);
 
       // Assert
+      verify(validator).chain(true, ValidationError.MISSING_FIELD, "email");
+      verify(validator).chain(true, ValidationError.MISSING_FIELD, "username");
+      verify(validator).check(true, ValidationError.MISSING_FIELD, "password");
       verify(validator).check(false, ValidationError.BAD_VALUE, "email");
       verify(validator).getResponseEntity();
       verifyNoMoreInteractions(validator);

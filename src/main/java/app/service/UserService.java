@@ -46,8 +46,12 @@ public class UserService {
     * @throws ApiException if User already exists
     */
    public void createNewUser(final User user) throws ApiException {
-      if (userDao.findByUsernameOrEmail(user.getUsername(), user.getEmail()).isPresent()) {
-         throw new ApiException("User already exists", ValidationError.DUPLICATE_USER);
+      final Optional<User> existingUser = userDao.findByUsernameOrEmail(user.getUsername(), user.getEmail());
+
+      if (existingUser.isPresent()) {
+         final ValidationError error = existingUser.get().getUsername().equals(user.getUsername())
+               ? ValidationError.DUPLICATE_USERNAME : ValidationError.DUPLICATE_EMAIL;
+         throw new ApiException("User already exists", error);
       }
 
       userDao.save(user);
