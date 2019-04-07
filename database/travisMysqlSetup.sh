@@ -9,6 +9,8 @@ cat > ../src/main/resources/application.properties << EOL
     spring.datasource.username=root
     spring.datasource.password=
 
+    server.servlet.context-path=/api
+
     spring.jpa.hibernate.naming.physical-strategy=org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
 }
 EOL
