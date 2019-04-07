@@ -56,7 +56,7 @@ public class ApplicationTest {
    public void shouldReturn200WhenSendingRequestToController() throws Exception {
       @SuppressWarnings("rawtypes")
       final ResponseEntity<Map> entity = this.testRestTemplate.getForEntity(
-            "http://localhost:" + this.port + "/user/1", Map.class);
+            "http://localhost:" + this.port + "/api/users/1", Map.class);
 
       Assert.assertEquals(HttpStatus.OK, entity.getStatusCode());
    }
