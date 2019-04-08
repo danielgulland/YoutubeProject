@@ -5,7 +5,7 @@ cat > ../src/main/resources/application.properties << EOL
     management.server.address: 127.0.0.1
 
     spring.jpa.hibernate.ddl-auto=none
-    spring.datasource.url=jdbc:mysql://localhost:3306/youtube_project
+    spring.datasource.url=jdbc:mysql://localhost:3306/youtube_project?serverTimezone=UTC
     spring.datasource.username=root
     spring.datasource.password=
 
