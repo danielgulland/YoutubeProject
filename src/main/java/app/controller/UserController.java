@@ -1,7 +1,7 @@
 package app.controller;
 
 import app.model.User;
-import app.request.RegistrationModel;
+import app.request.RegistrationData;
 import app.service.UserService;
 import app.validation.ValidationError;
 import app.validation.Validator;
@@ -47,16 +47,16 @@ public class UserController {
    /**
     * Create a new User given the Registration information.
     *
-    * @param registrationModel information required to create a new user
+    * @param registrationData information required to create a new user
     * @return Response with status 200 and empty body for successful call, otherwise validation response
     */
    @PostMapping()
-   public ResponseEntity createNewUser(@RequestBody final RegistrationModel registrationModel) {
-      if (validator.chain(StringUtils.isNotBlank(registrationModel.getEmail()), ValidationError.MISSING_FIELD, "email")
-            .chain(StringUtils.isNotBlank(registrationModel.getUsername()), ValidationError.MISSING_FIELD, "username")
-            .check(StringUtils.isNotBlank(registrationModel.getPassword()), ValidationError.MISSING_FIELD, "password")
-            && validator.check(registrationModel.getEmail().contains("@"), ValidationError.BAD_VALUE, "email")) {
-         userService.createNewUser(buildUserFromRegistrationModel(registrationModel));
+   public ResponseEntity createNewUser(@RequestBody final RegistrationData registrationData) {
+      if (validator.chain(StringUtils.isNotBlank(registrationData.getEmail()), ValidationError.MISSING_FIELD, "email")
+            .chain(StringUtils.isNotBlank(registrationData.getUsername()), ValidationError.MISSING_FIELD, "username")
+            .check(StringUtils.isNotBlank(registrationData.getPassword()), ValidationError.MISSING_FIELD, "password")
+            && validator.check(registrationData.getEmail().contains("@"), ValidationError.BAD_VALUE, "email")) {
+         userService.createNewUser(buildUserFromRegistrationData(registrationData));
 
          return ResponseEntity.status(HttpStatus.OK).body(null);
       }
@@ -64,11 +64,11 @@ public class UserController {
       return validator.getResponseEntity();
    }
 
-   private User buildUserFromRegistrationModel(final RegistrationModel registrationModel) {
+   private User buildUserFromRegistrationData(final RegistrationData registrationData) {
       return User.builder()
-            .username(registrationModel.getUsername())
-            .email(registrationModel.getEmail())
-            .passwordHash(registrationModel.getPassword())
+            .username(registrationData.getUsername())
+            .email(registrationData.getEmail())
+            .passwordHash(registrationData.getPassword())
             .build();
    }
 }

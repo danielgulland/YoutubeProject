@@ -1,7 +1,7 @@
 package app.controller;
 
 import app.model.User;
-import app.request.RegistrationModel;
+import app.request.RegistrationData;
 import app.service.UserService;
 import app.validation.ValidationError;
 import app.validation.Validator;
@@ -92,7 +92,7 @@ public class UserControllerTest {
       when(validator.check(true, ValidationError.BAD_VALUE, "email")).thenReturn(true);
 
       // Act
-      final ResponseEntity response = controller.createNewUser(buildRegistrationModel());
+      final ResponseEntity response = controller.createNewUser(buildRegistrationData());
 
       // Assert
       verify(validator).chain(true, ValidationError.MISSING_FIELD, "email");
@@ -108,7 +108,7 @@ public class UserControllerTest {
    }
 
    @Test
-   public void testCreateNewUser_InvalidRegistrationModel() {
+   public void testCreateNewUser_InvalidRegistrationData() {
       // Arrange
       when(validator.chain(false, ValidationError.MISSING_FIELD, "email")).thenReturn(validator);
       when(validator.chain(false, ValidationError.MISSING_FIELD, "username")).thenReturn(validator);
@@ -116,7 +116,7 @@ public class UserControllerTest {
       when(validator.getResponseEntity()).thenReturn(buildResponseEntity(HttpStatus.BAD_REQUEST));
 
       // Act
-      final ResponseEntity response = controller.createNewUser(new RegistrationModel());
+      final ResponseEntity response = controller.createNewUser(new RegistrationData());
 
       // Assert
       verify(validator).chain(false, ValidationError.MISSING_FIELD, "email");
@@ -141,9 +141,9 @@ public class UserControllerTest {
       when(validator.getResponseEntity()).thenReturn(buildResponseEntity(HttpStatus.BAD_REQUEST));
 
       // Act
-      final RegistrationModel registrationModel = buildRegistrationModel();
-      registrationModel.setEmail(INVALID_EMAIL);
-      final ResponseEntity response = controller.createNewUser(registrationModel);
+      final RegistrationData registrationData = buildRegistrationData();
+      registrationData.setEmail(INVALID_EMAIL);
+      final ResponseEntity response = controller.createNewUser(registrationData);
 
       // Assert
       verify(validator).chain(true, ValidationError.MISSING_FIELD, "email");
@@ -158,8 +158,8 @@ public class UserControllerTest {
       Assert.assertNull(response.getBody());
    }
 
-   private RegistrationModel buildRegistrationModel() {
-      final RegistrationModel model = new RegistrationModel();
+   private RegistrationData buildRegistrationData() {
+      final RegistrationData model = new RegistrationData();
       model.setUsername(USERNAME);
       model.setEmail(EMAIL);
       model.setPassword(PASSWORD);
