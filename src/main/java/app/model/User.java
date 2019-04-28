@@ -12,7 +12,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import javax.validation.constraints.Null;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -25,7 +24,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 public class User {
 
    @Id
-   @Null
    @GeneratedValue(strategy = GenerationType.IDENTITY)
    private Integer id;
 

@@ -9,9 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.junit.Assert;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -34,9 +32,6 @@ public class UserServiceTest {
    private static final String USERNAME = "testUser";
    private static final String EMAIL = "test@email.com";
    private static final String PASSWORD = "password";
-
-   @Rule
-   public ExpectedException expectedException = ExpectedException.none();
 
    @Mock
    private UserDao userDao;
