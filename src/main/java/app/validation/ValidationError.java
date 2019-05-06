@@ -16,11 +16,7 @@ public enum ValidationError {
 
    INTERNAL_SERVER_ERROR("internalServerError", HttpStatus.INTERNAL_SERVER_ERROR),
 
-   DUPLICATE_USERNAME("duplicateUsername", HttpStatus.BAD_REQUEST),
-
-   DUPLICATE_EMAIL("duplicateEmail", HttpStatus.BAD_REQUEST),
-
-   DUPLICATE_USER("duplicateUser", HttpStatus.BAD_REQUEST);
+   DUPLICATE_VALUE("duplicateUsername", HttpStatus.BAD_REQUEST);
 
    private final String tag;
    private final HttpStatus status;

@@ -17,11 +17,26 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
    @Autowired
    private Validator validator;
 
+   /**
+    * Handles an API exception.
+    *
+    * @param ex exception containing information pertaining to the error
+    * @return Response with a status and body that relates to the error
+    */
    @ExceptionHandler(ApiException.class)
    public final ResponseEntity handleApiException(final ApiException ex) {
-      return validator.chain(false, ex.getError(), ex.getField()).getResponseEntity();
+      for (String field : ex.getFields()) {
+         validator.chain(false, ex.getError(), field);
+      }
+      return validator.getResponseEntity();
    }
 
+   /**
+    * Handles all other exceptions.
+    *
+    * @param ex exception containing information pertaining to the error
+    * @return Response representing internal server error
+    */
    @ExceptionHandler(Exception.class)
    public final ResponseEntity handleServerError(final Exception ex) {
       System.err.println(ex.toString());
