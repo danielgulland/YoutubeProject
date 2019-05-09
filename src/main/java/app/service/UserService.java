@@ -3,6 +3,7 @@ package app.service;
 import app.dao.UserDao;
 import app.exception.ApiException;
 import app.model.User;
+import app.request.UpdateUserModel;
 import app.validation.ValidationError;
 
 import java.util.ArrayList;
@@ -36,6 +37,36 @@ public class UserService {
       throw new ApiException("User does not exist", ValidationError.NOT_FOUND, "user");
    }
 
+   /**
+    * Hi.
+    * @param id id
+    * @throws ApiException if no User exists
+    */
+   //Do all the checking in UserController
+   public void updateUserById(final int id, final UpdateUserModel updateUserModel) throws ApiException {
+      final Optional<User> user = userDao.findById(id);
+      
+      if (user.isPresent()) {
+
+         if (updateUserModel.getEmail().equals(user.get().getEmail())
+               && updateUserModel.getPassword().equals(user.get().getPasswordHash())
+               || updateUserModel.getEmail().equals(user.get().getEmail())
+               || updateUserModel.getPassword().equals(user.get().getPasswordHash())) {
+            throw new ApiException("Duplicate user", ValidationError.DUPLICATE_VALUE);
+         }
+
+         if (!updateUserModel.getPassword().equals(user.get().getPasswordHash())) {
+            user.get().setPasswordHash(updateUserModel.getPassword());
+         }
+
+         if (!updateUserModel.getEmail().equals(user.get().getEmail())) {
+            user.get().setEmail(updateUserModel.getEmail());
+         }
+      }
+
+      userDao.save(user.get());
+   }
+
    public List<User> getAllUsers() {
       return userDao.findAll();
    }
@@ -51,7 +82,6 @@ public class UserService {
       final List<User> existingUsers = userDao.findByUsernameOrEmail(user.getUsername(), user.getEmail());
 
       if (!existingUsers.isEmpty()) {
-
          final List<String> duplicateValueFields = new ArrayList<>();
          for (User existingUser: existingUsers) {
             if (existingUser.getUsername().equals(user.getUsername())) {

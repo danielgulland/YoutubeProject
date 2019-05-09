@@ -65,15 +65,16 @@ public class UserControllerTest {
    }
 
    @Test
-   public void testGetUserById_InvalidId() {
-      // Arrange
+   public void testGetUserById_Invalid() {
+      //Arrange
+      final User user = buildUser();
       when(validator.check(false, ValidationError.BAD_VALUE, "id")).thenReturn(false);
       when(validator.getResponseEntity()).thenReturn(buildResponseEntity(HttpStatus.BAD_REQUEST));
 
-      // Act
+      //Act
       final ResponseEntity response = controller.getUserById(INVALID_ID);
 
-      // Assert
+      //Assert
       verify(validator).check(false, ValidationError.BAD_VALUE, "id");
       verify(validator).getResponseEntity();
       verifyNoMoreInteractions(validator);

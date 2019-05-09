@@ -2,6 +2,7 @@ package app.controller;
 
 import app.model.User;
 import app.request.RegistrationData;
+import app.request.UpdateUserModel;
 import app.service.UserService;
 import app.validation.ValidationError;
 import app.validation.Validator;
@@ -13,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -41,6 +43,28 @@ public class UserController {
          return ResponseEntity.status(HttpStatus.OK).body(user);
       }
 
+      return validator.getResponseEntity();
+   }
+
+   /**
+    * Hey.
+    *
+    * @param id  user id
+    * @return Response
+    */
+   @PutMapping("/{id}")
+   public ResponseEntity updateUserById(@PathVariable final int id,
+                                     @RequestBody final UpdateUserModel updateUserModel) {
+      if (validator.check(id > 0, ValidationError.BAD_VALUE, "id")
+            && StringUtils.isNotBlank(updateUserModel.getEmail())
+            && validator.check(updateUserModel.getEmail().contains("@"), ValidationError.BAD_VALUE, "email")
+            || StringUtils.isNotBlank(updateUserModel.getPassword())
+            && validator.check(StringUtils.isNotBlank(updateUserModel.getOldPassword()),
+            ValidationError.MISSING_FIELD, "oldPassword")) {
+         userService.updateUserById(id, updateUserModel);
+
+         return ResponseEntity.status(HttpStatus.OK).body(null);
+      }
       return validator.getResponseEntity();
    }
 

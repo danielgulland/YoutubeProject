@@ -9,7 +9,6 @@ import org.junit.Test;
 
 import com.google.common.collect.ImmutableList;
 
-
 public class ApiExceptionTest {
 
    private static final String MESSAGE = "test api exception";

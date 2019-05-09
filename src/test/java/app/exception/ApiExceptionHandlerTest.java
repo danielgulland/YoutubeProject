@@ -33,7 +33,7 @@ public class ApiExceptionHandlerTest {
    private ApiExceptionHandler handler;
 
    @Test
-   public void testHandleApiException() {
+   public void testHandleApiExceptionWithNoField() {
       // Arrange
       final ValidationError error = ValidationError.NOT_FOUND;
       when(validator.getResponseEntity()).thenReturn(buildResponseEntity(error));
@@ -45,7 +45,6 @@ public class ApiExceptionHandlerTest {
       verify(validator, times(0)).check(false, ValidationError.BAD_VALUE, "email");
       verify(validator).getResponseEntity();
       verifyNoMoreInteractions(validator);
-
       Assert.assertEquals(error.getStatus(), response.getStatusCode());
       Assert.assertEquals(error.getTag(), response.getBody());
    }
