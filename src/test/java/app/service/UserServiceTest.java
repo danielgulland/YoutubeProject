@@ -4,7 +4,10 @@ import app.dao.UserDao;
 import app.exception.ApiException;
 import app.model.User;
 import app.validation.ValidationError;
+import jdk.nashorn.internal.ir.annotations.Immutable;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,6 +35,8 @@ public class UserServiceTest {
    private static final String USERNAME = "testUser";
    private static final String EMAIL = "test@email.com";
    private static final String PASSWORD = "password";
+   private static final String DIFFERENT_USERNAME = "differentEmail@mail.com";
+   private static final String DIFFERENT_EMAIL = "differentUsername";
 
    @Mock
    private UserDao userDao;
@@ -72,7 +77,7 @@ public class UserServiceTest {
          verifyNoMoreInteractions(userDao);
 
          Assert.assertEquals(ValidationError.NOT_FOUND, ex.getError());
-         Assert.assertEquals("user", ex.getField());
+         Assert.assertEquals("user", ex.getFields().get(0));
          Assert.assertEquals("User does not exist", ex.getMessage());
       }
    }
@@ -97,7 +102,7 @@ public class UserServiceTest {
    @Test
    public void testCreateNewUser_Success() {
       // Arrange
-      when(userDao.findByUsernameOrEmail(anyString(), anyString())).thenReturn(Optional.empty());
+      when(userDao.findByUsernameOrEmail(anyString(), anyString())).thenReturn(Collections.emptyList());
 
       // Act
       userService.createNewUser(buildUser());
@@ -105,46 +110,109 @@ public class UserServiceTest {
       // Assert
       verify(userDao).findByUsernameOrEmail(anyString(), anyString());
       verify(userDao).save(any(User.class));
+      verifyNoMoreInteractions(userDao);
    }
+
 
    @Test
    public void testCreateNewUser_UserAlreadyExists_DuplicateUsername() {
-      // Arrange
+      // arrange
       final User user = buildUser();
-      when(userDao.findByUsernameOrEmail(anyString(), anyString())).thenReturn(Optional.of(user));
+      final User existingUser = buildUser();
+      existingUser.setEmail(DIFFERENT_EMAIL);
 
+      when(userDao.findByUsernameOrEmail(anyString(),anyString())).thenReturn(ImmutableList.of(existingUser));
+
+      // act
       try {
-         // Act
          userService.createNewUser(user);
          fail("Exception not thrown");
       } catch (ApiException ex) {
-         // Assert
+         // assert
          verify(userDao).findByUsernameOrEmail(anyString(), anyString());
          verifyNoMoreInteractions(userDao);
 
-         Assert.assertEquals(ValidationError.DUPLICATE_USERNAME, ex.getError());
-         Assert.assertNull(ex.getField());
+         Assert.assertEquals(ValidationError.DUPLICATE_VALUE, ex.getError());
          Assert.assertEquals("User already exists", ex.getMessage());
+         Assert.assertEquals(1, ex.getFields().size());
+         Assert.assertEquals("username", ex.getFields().get(0));
       }
    }
 
    @Test
    public void testCreateNewUser_UserAlreadyExists_DuplicateEmail() {
-      // Arrange
-      when(userDao.findByUsernameOrEmail(anyString(), anyString())).thenReturn(Optional.of(buildUser()));
+      // arrange
+      final User user = buildUser();
+      final User existingUser = buildUser();
+      existingUser.setUsername(DIFFERENT_USERNAME);
 
+      when(userDao.findByUsernameOrEmail(anyString(),anyString())).thenReturn(ImmutableList.of(existingUser));
+
+      // act
       try {
-         // Act
-         userService.createNewUser(new User(null, USERNAME + "1", EMAIL, PASSWORD));
+         userService.createNewUser(user);
          fail("Exception not thrown");
       } catch (ApiException ex) {
-         // Assert
+         // assert
          verify(userDao).findByUsernameOrEmail(anyString(), anyString());
          verifyNoMoreInteractions(userDao);
 
-         Assert.assertEquals(ValidationError.DUPLICATE_EMAIL, ex.getError());
-         Assert.assertNull(ex.getField());
+         Assert.assertEquals(ValidationError.DUPLICATE_VALUE, ex.getError());
          Assert.assertEquals("User already exists", ex.getMessage());
+         Assert.assertEquals(1, ex.getFields().size());
+         Assert.assertEquals("email", ex.getFields().get(0));
+      }
+   }
+
+   @Test
+   public void testCreateNewUser_UserAlreadyExists_DuplicateUsername_And_DuplicateEmail_Same_User() {
+      // arrange
+      final User user = buildUser();
+      when(userDao.findByUsernameOrEmail(anyString(),anyString())).thenReturn(ImmutableList.of(user));
+
+      // act
+      try {
+         userService.createNewUser(user);
+         fail("Exception not thrown");
+      } catch (ApiException ex) {
+         // assert
+         verify(userDao).findByUsernameOrEmail(anyString(), anyString());
+         verifyNoMoreInteractions(userDao);
+
+         Assert.assertEquals(ValidationError.DUPLICATE_VALUE, ex.getError());
+         Assert.assertEquals("User already exists", ex.getMessage());
+         Assert.assertEquals(2, ex.getFields().size());
+         Assert.assertTrue(ex.getFields().contains("username"));
+         Assert.assertTrue(ex.getFields().contains("email"));
+      }
+   }
+
+   @Test
+   public void testCreateNewUser_UserAlreadyExists_DuplicateUsername_And_DuplicateEmail_Different_Users() {
+      // arrange
+      final User user = buildUser();
+      final User existingUser1 = buildUser();
+      final User existingUser2 = buildUser();
+      existingUser1.setEmail(DIFFERENT_EMAIL);
+      existingUser2.setUsername(DIFFERENT_USERNAME);
+
+      when(userDao.findByUsernameOrEmail(anyString(), anyString()))
+            .thenReturn(ImmutableList.of(existingUser1, existingUser2));
+
+      // act
+      try {
+         userService.createNewUser(user);
+         fail("Exception not thrown");
+      } catch (ApiException ex) {
+         // assert
+         verify(userDao).findByUsernameOrEmail(anyString(), anyString());
+         verifyNoMoreInteractions(userDao);
+
+         Assert.assertEquals(ValidationError.DUPLICATE_VALUE, ex.getError());
+         Assert.assertEquals("User already exists", ex.getMessage());
+         Assert.assertEquals(2, ex.getFields().size());
+         Assert.assertTrue(ex.getFields().contains("username"));
+         Assert.assertTrue(ex.getFields().contains("email"));
       }
    }
 

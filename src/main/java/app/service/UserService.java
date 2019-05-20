@@ -28,6 +28,7 @@ public class UserService {
    public User getUserById(final int id) throws ApiException {
       final Optional<User> user = userDao.findById(id);
 
+
       if (user.isPresent()) {
          return user.get();
       }
@@ -53,7 +54,12 @@ public class UserService {
 
          final List<String> duplicateValueFields = new ArrayList<>();
          for (User existingUser: existingUsers) {
-            duplicateValueFields.add(existingUser.getUsername().equals(user.getUsername()) ? "username" : "email");
+            if (existingUser.getUsername().equals(user.getUsername())) {
+               duplicateValueFields.add("username");
+            }
+            if (existingUser.getEmail().equals(user.getEmail())) {
+               duplicateValueFields.add("email");
+            }
          }
 
          throw new ApiException("User already exists", ValidationError.DUPLICATE_VALUE, duplicateValueFields);

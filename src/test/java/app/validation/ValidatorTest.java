@@ -15,7 +15,7 @@ import com.google.common.collect.ImmutableMap;
 public class ValidatorTest {
 
    private static final ValidationError ERROR = ValidationError.BAD_VALUE;
-   private static final ValidationError ERROR2 = ValidationError.DUPLICATE_USER;
+   private static final ValidationError ERROR2 = ValidationError.DUPLICATE_VALUE;
    private static final String FIELD = "test";
    private static final String FIELD2 = "test2";
 
