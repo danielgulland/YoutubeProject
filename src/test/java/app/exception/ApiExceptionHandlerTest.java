@@ -32,25 +32,8 @@ public class ApiExceptionHandlerTest {
    @InjectMocks
    private ApiExceptionHandler handler;
 
-   /*
-      @Test
-      public void testHandleApiException() {
-
-         when(validator.check(anyBoolean(),any(Validation.class), nullable(anyString()).thenReturn(validator);
-         when(validator.getResponseEntity()).thenReturn(ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null)_;
-
-         ResponseEntity response = handler.handleApiException(new ApiException();
-
-         verify(validator).check(false,...);
-         verify(validator).getResponseEntity();
-         verifyNoMoreInteractions(validator);
-
-         Assert.assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode())
-
-    */
-
    @Test
-   public void testHandleApiException_With_No_Field() {
+   public void testHandleApiException() {
       // Arrange
       final ValidationError error = ValidationError.NOT_FOUND;
       when(validator.getResponseEntity()).thenReturn(buildResponseEntity(error));

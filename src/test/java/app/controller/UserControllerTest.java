@@ -6,8 +6,6 @@ import app.service.UserService;
 import app.validation.ValidationError;
 import app.validation.Validator;
 
-import javax.xml.ws.Response;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,7 +18,6 @@ import org.springframework.http.ResponseEntity;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyObject;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -113,17 +110,9 @@ public class UserControllerTest {
    @Test
    public void testCreateNewUser_InvalidRegistrationData() {
       // Arrange
-//      when(validator.chain(false, ValidationError.MISSING_FIELD, "email")).thenReturn(validator);
-//      when(validator.chain(false, ValidationError.MISSING_FIELD, "username")).thenReturn(validator);
-
-      when(validator.chain(anyBoolean(),any(ValidationError.class),anyString())).thenReturn(validator);
-
+      when(validator.chain(false, ValidationError.MISSING_FIELD, "email")).thenReturn(validator);
+      when(validator.chain(false, ValidationError.MISSING_FIELD, "username")).thenReturn(validator);
       when(validator.check(false, ValidationError.MISSING_FIELD, "password")).thenReturn(false);
-
-//      if (!validator.check(false,ValidationError.MISSING_FIELD,"password")) {
-//         System.out.println("heyy");
-//      }
-
       when(validator.getResponseEntity()).thenReturn(buildResponseEntity(HttpStatus.BAD_REQUEST));
 
       // Act
@@ -133,7 +122,6 @@ public class UserControllerTest {
       verify(validator).chain(false, ValidationError.MISSING_FIELD, "email");
       verify(validator).chain(false, ValidationError.MISSING_FIELD, "username");
       verify(validator).check(false, ValidationError.MISSING_FIELD, "password");
-
       verify(validator, times(0)).check(false, ValidationError.BAD_VALUE, "email");
       verify(validator).getResponseEntity();
       verifyNoMoreInteractions(validator);
