@@ -4,9 +4,7 @@ import app.dao.UserDao;
 import app.exception.ApiException;
 import app.model.User;
 import app.validation.ValidationError;
-import jdk.nashorn.internal.ir.annotations.Immutable;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
