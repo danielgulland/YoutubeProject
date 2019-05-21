@@ -2,15 +2,12 @@ package app.exception;
 
 import app.validation.ValidationError;
 
-import java.util.Collections;
 import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
 
 import com.google.common.collect.ImmutableList;
-
-import static org.mockito.ArgumentMatchers.anyString;
 
 
 public class ApiExceptionTest {
@@ -42,7 +39,6 @@ public class ApiExceptionTest {
       Assert.assertEquals(MESSAGE, apiException.getMessage());
       Assert.assertEquals(ERROR, apiException.getError());
       Assert.assertEquals(FIELDS, apiException.getFields());
-//      Assert.assertEquals(FIELD, apiException.getFields().get(0));
       Assert.assertNull(apiException.getCause());
    }
 
@@ -69,5 +65,20 @@ public class ApiExceptionTest {
       Assert.assertEquals(FIELDS, apiException.getFields());
       Assert.assertNotNull(apiException.getCause());
       Assert.assertEquals(MESSAGE, apiException.getCause().getMessage());
+   }
+
+   @Test(expected = NullPointerException.class)
+   public void testApiException_fieldNonNull() {
+      new ApiException(null, null, (String) null);
+   }
+
+   @Test(expected = NullPointerException.class)
+   public void testApiException_fieldsNonNull() {
+      new ApiException(null, null, (List) null);
+   }
+
+   @Test(expected = NullPointerException.class)
+   public void testApiException_fieldsNonNullWithThrowable() {
+      new ApiException(null, null, null, null);
    }
 }
