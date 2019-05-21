@@ -5,6 +5,7 @@ import app.exception.ApiException;
 import app.model.User;
 import app.validation.ValidationError;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,6 +28,7 @@ public class UserService {
    public User getUserById(final int id) throws ApiException {
       final Optional<User> user = userDao.findById(id);
 
+
       if (user.isPresent()) {
          return user.get();
       }
@@ -46,12 +48,21 @@ public class UserService {
     * @throws ApiException if User already exists
     */
    public void createNewUser(final User user) throws ApiException {
-      final Optional<User> existingUser = userDao.findByUsernameOrEmail(user.getUsername(), user.getEmail());
+      final List<User> existingUsers = userDao.findByUsernameOrEmail(user.getUsername(), user.getEmail());
 
-      if (existingUser.isPresent()) {
-         final ValidationError error = existingUser.get().getUsername().equals(user.getUsername())
-               ? ValidationError.DUPLICATE_USERNAME : ValidationError.DUPLICATE_EMAIL;
-         throw new ApiException("User already exists", error);
+      if (!existingUsers.isEmpty()) {
+
+         final List<String> duplicateValueFields = new ArrayList<>();
+         for (User existingUser: existingUsers) {
+            if (existingUser.getUsername().equals(user.getUsername())) {
+               duplicateValueFields.add("username");
+            }
+            if (existingUser.getEmail().equals(user.getEmail())) {
+               duplicateValueFields.add("email");
+            }
+         }
+
+         throw new ApiException("User already exists", ValidationError.DUPLICATE_VALUE, duplicateValueFields);
       }
 
       userDao.save(user);
