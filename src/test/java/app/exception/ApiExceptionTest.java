@@ -2,15 +2,12 @@ package app.exception;
 
 import app.validation.ValidationError;
 
-import java.util.Collections;
 import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
 
 import com.google.common.collect.ImmutableList;
-
-import static org.mockito.ArgumentMatchers.anyString;
 
 
 public class ApiExceptionTest {
@@ -42,7 +39,6 @@ public class ApiExceptionTest {
       Assert.assertEquals(MESSAGE, apiException.getMessage());
       Assert.assertEquals(ERROR, apiException.getError());
       Assert.assertEquals(FIELDS, apiException.getFields());
-//      Assert.assertEquals(FIELD, apiException.getFields().get(0));
       Assert.assertNull(apiException.getCause());
    }
 
