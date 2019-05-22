@@ -3,7 +3,7 @@ package app.service;
 import app.dao.UserDao;
 import app.exception.ApiException;
 import app.model.User;
-import app.request.UpdateUserModel;
+import app.request.UpdateUserData;
 import app.validation.ValidationError;
 
 import java.util.ArrayList;
@@ -43,25 +43,32 @@ public class UserService {
     * @throws ApiException if no User exists
     */
    //Do all the checking in UserController
-   public void updateUserById(final int id, final UpdateUserModel updateUserModel) throws ApiException {
+   public void updateUserById(final int id, final UpdateUserData updateUserData) throws ApiException {
+
       final Optional<User> user = userDao.findById(id);
-      
-      if (user.isPresent()) {
 
-         if (updateUserModel.getEmail().equals(user.get().getEmail())
-               && updateUserModel.getPassword().equals(user.get().getPasswordHash())
-               || updateUserModel.getEmail().equals(user.get().getEmail())
-               || updateUserModel.getPassword().equals(user.get().getPasswordHash())) {
-            throw new ApiException("Duplicate user", ValidationError.DUPLICATE_VALUE);
+      if (!user.isPresent()) {
+         throw new ApiException("User does not exist", ValidationError.NOT_FOUND, "user");
+      }
+
+      if (updateUserData.getPassword() != null) {
+         if (!updateUserData.getOldPassword().equals(user.get().getPasswordHash())) {
+            throw new ApiException("Old password isn't correct", ValidationError.BAD_VALUE, "oldPassword");
          }
 
-         if (!updateUserModel.getPassword().equals(user.get().getPasswordHash())) {
-            user.get().setPasswordHash(updateUserModel.getPassword());
+         user.get().setPasswordHash(updateUserData.getPassword());
+      }
+
+
+
+      if (updateUserData.getEmail() != null) {
+         final Optional<User> existingEmail = userDao.findByEmail(updateUserData.getEmail());
+
+         if (existingEmail.isPresent()) {
+            throw new ApiException("Email already exists", ValidationError.DUPLICATE_VALUE, "email");
          }
 
-         if (!updateUserModel.getEmail().equals(user.get().getEmail())) {
-            user.get().setEmail(updateUserModel.getEmail());
-         }
+         user.get().setEmail(updateUserData.getEmail());
       }
 
       userDao.save(user.get());

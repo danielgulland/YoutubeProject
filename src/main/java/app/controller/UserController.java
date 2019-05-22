@@ -2,7 +2,7 @@ package app.controller;
 
 import app.model.User;
 import app.request.RegistrationData;
-import app.request.UpdateUserModel;
+import app.request.UpdateUserData;
 import app.service.UserService;
 import app.validation.ValidationError;
 import app.validation.Validator;
@@ -49,19 +49,17 @@ public class UserController {
    /**
     * Hey.
     *
-    * @param id  user id
+    * @param id user id
     * @return Response
     */
    @PutMapping("/{id}")
    public ResponseEntity updateUserById(@PathVariable final int id,
-                                     @RequestBody final UpdateUserModel updateUserModel) {
+                                        @RequestBody final UpdateUserData updateUserData) {
       if (validator.check(id > 0, ValidationError.BAD_VALUE, "id")
-            && StringUtils.isNotBlank(updateUserModel.getEmail())
-            && validator.check(updateUserModel.getEmail().contains("@"), ValidationError.BAD_VALUE, "email")
-            || StringUtils.isNotBlank(updateUserModel.getPassword())
-            && validator.check(StringUtils.isNotBlank(updateUserModel.getOldPassword()),
-            ValidationError.MISSING_FIELD, "oldPassword")) {
-         userService.updateUserById(id, updateUserModel);
+            && validator.chain(isEmailValid(updateUserData.getEmail()), ValidationError.BAD_VALUE, "email")
+            .check(isPasswordValid(updateUserData.getPassword(), updateUserData.getOldPassword()),
+                  ValidationError.MISSING_FIELD, "oldPassword")) {
+         userService.updateUserById(id, updateUserData);
 
          return ResponseEntity.status(HttpStatus.OK).body(null);
       }
@@ -94,5 +92,15 @@ public class UserController {
             .email(registrationData.getEmail())
             .passwordHash(registrationData.getPassword())
             .build();
+   }
+
+   private boolean isEmailValid(final String email) {
+      return StringUtils.isBlank(email)
+            || email.contains("@");
+   }
+
+   private boolean isPasswordValid(final String password, final String oldPassword) {
+      return StringUtils.isBlank(password)
+            || StringUtils.isNotBlank(oldPassword);
    }
 }
