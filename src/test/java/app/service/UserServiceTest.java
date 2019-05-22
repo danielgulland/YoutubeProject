@@ -24,6 +24,7 @@ import static org.assertj.core.api.Fail.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -266,7 +267,7 @@ public class UserServiceTest {
       verifyNoMoreInteractions(userDao);
 
       Assert.assertEquals(updateUserData.getEmail(), user.getEmail());
-      Assert.assertNull(updateUserData.getPassword());
+      Assert.assertEquals(PASSWORD, user.getPasswordHash());
    }
 
    @Test
@@ -286,10 +287,11 @@ public class UserServiceTest {
       //Arrange
       verify(userDao).findById(USER_ID);
       verify(userDao).save(any(User.class));
+      verify(userDao, never()).findByEmail(anyString());
       verifyNoMoreInteractions(userDao);
 
       Assert.assertEquals(updateUserData.getPassword(), user.getPasswordHash());
-      Assert.assertNull(updateUserData.getEmail());
+      Assert.assertEquals(EMAIL, user.getEmail());
       Assert.assertNotNull(updateUserData.getPassword());
    }
 
