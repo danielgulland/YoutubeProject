@@ -3,12 +3,14 @@ package app.service;
 import app.dao.UserDao;
 import app.exception.ApiException;
 import app.model.User;
+import app.request.UpdateUserData;
 import app.validation.ValidationError;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -36,6 +38,42 @@ public class UserService {
       throw new ApiException("User does not exist", ValidationError.NOT_FOUND, "user");
    }
 
+   /**
+    * Service call to update user by id.
+    *
+    * @param id user id to check for
+    * @throws ApiException if no User exists for given id, if old password isn't correct, if email already exists.
+    */
+   public void updateUserById(final int id, final UpdateUserData updateUserData) throws ApiException {
+
+      final Optional<User> user = userDao.findById(id);
+
+      if (!user.isPresent()) {
+         throw new ApiException("User does not exist", ValidationError.NOT_FOUND, "user");
+      }
+
+      if (StringUtils.isNotBlank(updateUserData.getPassword())
+            && StringUtils.isNotBlank(updateUserData.getOldPassword())) {
+         if (!updateUserData.getOldPassword().equals(user.get().getPasswordHash())) {
+            throw new ApiException("Old password isn't correct", ValidationError.BAD_VALUE, "oldPassword");
+         }
+
+         user.get().setPasswordHash(updateUserData.getPassword());
+      }
+
+      if (StringUtils.isNotBlank(updateUserData.getEmail())) {
+         final Optional<User> existingEmail = userDao.findByEmail(updateUserData.getEmail());
+
+         if (existingEmail.isPresent()) {
+            throw new ApiException("Email already exists", ValidationError.DUPLICATE_VALUE, "email");
+         }
+
+         user.get().setEmail(updateUserData.getEmail());
+      }
+
+      userDao.save(user.get());
+   }
+
    public List<User> getAllUsers() {
       return userDao.findAll();
    }
@@ -51,7 +89,6 @@ public class UserService {
       final List<User> existingUsers = userDao.findByUsernameOrEmail(user.getUsername(), user.getEmail());
 
       if (!existingUsers.isEmpty()) {
-
          final List<String> duplicateValueFields = new ArrayList<>();
          for (User existingUser: existingUsers) {
             if (existingUser.getUsername().equals(user.getUsername())) {
