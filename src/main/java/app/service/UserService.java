@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -51,7 +52,8 @@ public class UserService {
          throw new ApiException("User does not exist", ValidationError.NOT_FOUND, "user");
       }
 
-      if (updateUserData.getPassword() != null && updateUserData.getOldPassword() != null) {
+      if (StringUtils.isNotBlank(updateUserData.getPassword())
+            && StringUtils.isNotBlank(updateUserData.getOldPassword())) {
          if (!updateUserData.getOldPassword().equals(user.get().getPasswordHash())) {
             throw new ApiException("Old password isn't correct", ValidationError.BAD_VALUE, "oldPassword");
          }
@@ -59,7 +61,7 @@ public class UserService {
          user.get().setPasswordHash(updateUserData.getPassword());
       }
 
-      if (updateUserData.getEmail() != null) {
+      if (StringUtils.isNotBlank(updateUserData.getEmail())) {
          final Optional<User> existingEmail = userDao.findByEmail(updateUserData.getEmail());
 
          if (existingEmail.isPresent()) {
