@@ -38,11 +38,11 @@ public class UserService {
    }
 
    /**
-    * Hi.
-    * @param id id
-    * @throws ApiException if no User exists
+    * Service call to update user by id.
+    *
+    * @param id user id to check for
+    * @throws ApiException if no User exists for given id, if old password isn't correct, if email already exists.
     */
-   //Do all the checking in UserController
    public void updateUserById(final int id, final UpdateUserData updateUserData) throws ApiException {
 
       final Optional<User> user = userDao.findById(id);
@@ -51,15 +51,13 @@ public class UserService {
          throw new ApiException("User does not exist", ValidationError.NOT_FOUND, "user");
       }
 
-      if (updateUserData.getPassword() != null) {
+      if (updateUserData.getPassword() != null && updateUserData.getOldPassword() != null) {
          if (!updateUserData.getOldPassword().equals(user.get().getPasswordHash())) {
             throw new ApiException("Old password isn't correct", ValidationError.BAD_VALUE, "oldPassword");
          }
 
          user.get().setPasswordHash(updateUserData.getPassword());
       }
-
-
 
       if (updateUserData.getEmail() != null) {
          final Optional<User> existingEmail = userDao.findByEmail(updateUserData.getEmail());

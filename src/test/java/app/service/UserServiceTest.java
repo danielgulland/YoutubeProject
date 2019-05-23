@@ -292,7 +292,30 @@ public class UserServiceTest {
 
       Assert.assertEquals(updateUserData.getPassword(), user.getPasswordHash());
       Assert.assertEquals(EMAIL, user.getEmail());
-      Assert.assertNotNull(updateUserData.getPassword());
+   }
+
+   @Test
+   public void testUpdateUserById_validPassword_invalidOldPassword() {
+      //Arrange
+      final User user = buildUser();
+
+      when(userDao.findById(USER_ID)).thenReturn(Optional.of(user));
+
+      //Act
+      final UpdateUserData updateUserData = buildUpdateUserData();
+      updateUserData.setOldPassword(null);
+      updateUserData.setPassword("newPassword");
+      updateUserData.setEmail(null);
+      userService.updateUserById(USER_ID, updateUserData);
+
+      //Arrange
+      verify(userDao).findById(USER_ID);
+      verify(userDao).save(any(User.class));
+      verify(userDao, never()).findByEmail(anyString());
+      verifyNoMoreInteractions(userDao);
+
+      Assert.assertNotEquals(updateUserData.getPassword(), user.getPasswordHash());
+      Assert.assertEquals(EMAIL, user.getEmail());
    }
 
    @Test

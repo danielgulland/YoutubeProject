@@ -47,10 +47,10 @@ public class UserController {
    }
 
    /**
-    * Hey.
+    * Update an existing user given the information.
     *
     * @param id user id
-    * @return Response
+    * @return Response with status 200 and null in the body for successful call, otherwise validation response
     */
    @PutMapping("/{id}")
    public ResponseEntity updateUserById(@PathVariable final int id,
