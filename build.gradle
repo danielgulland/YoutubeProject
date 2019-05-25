@@ -65,6 +65,7 @@ jacocoTestReport {
                     exclude: [
                             'app/request/**',
                             'app/model/**',
+                            'app/constant/**',
                             'app/Application*'
                     ]
             )

@@ -19,6 +19,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import static app.constant.FieldConstants.EMAIL;
+import static app.constant.FieldConstants.ID;
+import static app.constant.FieldConstants.OLD_PASSWORD;
+import static app.constant.FieldConstants.PASSWORD;
+import static app.constant.FieldConstants.USERNAME;
+
 @RestController
 @RequestMapping(path = "/users")
 public class UserController {
@@ -37,7 +43,7 @@ public class UserController {
     */
    @GetMapping("/{id}")
    public ResponseEntity getUserById(@PathVariable final int id) {
-      if (validator.check(id > 0, ValidationError.BAD_VALUE, "id")) {
+      if (validator.check(id > 0, ValidationError.BAD_VALUE, ID)) {
          final User user = userService.getUserById(id);
 
          return ResponseEntity.status(HttpStatus.OK).body(user);
@@ -55,10 +61,10 @@ public class UserController {
    @PutMapping("/{id}")
    public ResponseEntity updateUserById(@PathVariable final int id,
                                         @RequestBody final UpdateUserData updateUserData) {
-      if (validator.check(id > 0, ValidationError.BAD_VALUE, "id")
-            && validator.chain(isEmailValid(updateUserData.getEmail()), ValidationError.BAD_VALUE, "email")
+      if (validator.check(id > 0, ValidationError.BAD_VALUE, ID)
+            && validator.chain(isEmailValid(updateUserData.getEmail()), ValidationError.BAD_VALUE, EMAIL)
             .check(isPasswordValid(updateUserData.getPassword(), updateUserData.getOldPassword()),
-                  ValidationError.MISSING_FIELD, "oldPassword")) {
+                  ValidationError.MISSING_FIELD, OLD_PASSWORD)) {
          userService.updateUserById(id, updateUserData);
 
          return ResponseEntity.status(HttpStatus.OK).body(null);
@@ -74,10 +80,10 @@ public class UserController {
     */
    @PostMapping()
    public ResponseEntity createNewUser(@RequestBody final RegistrationData registrationData) {
-      if (validator.chain(StringUtils.isNotBlank(registrationData.getEmail()), ValidationError.MISSING_FIELD, "email")
-            .chain(StringUtils.isNotBlank(registrationData.getUsername()), ValidationError.MISSING_FIELD, "username")
-            .check(StringUtils.isNotBlank(registrationData.getPassword()), ValidationError.MISSING_FIELD, "password")
-            && validator.check(registrationData.getEmail().contains("@"), ValidationError.BAD_VALUE, "email")) {
+      if (validator.chain(StringUtils.isNotBlank(registrationData.getEmail()), ValidationError.MISSING_FIELD, EMAIL)
+            .chain(StringUtils.isNotBlank(registrationData.getUsername()), ValidationError.MISSING_FIELD, USERNAME)
+            .check(StringUtils.isNotBlank(registrationData.getPassword()), ValidationError.MISSING_FIELD, PASSWORD)
+            && validator.check(registrationData.getEmail().contains("@"), ValidationError.BAD_VALUE, EMAIL)) {
          userService.createNewUser(buildUserFromRegistrationData(registrationData));
 
          return ResponseEntity.status(HttpStatus.OK).body(null);
