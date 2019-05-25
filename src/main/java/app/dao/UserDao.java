@@ -12,7 +12,7 @@ import org.springframework.data.repository.query.Param;
 public interface UserDao extends JpaRepository<User, Integer> {
    Optional<User> findByUsername(String username);
 
-   @Query("SELECT email FROM User WHERE email = :email")
+   @Query("SELECT U FROM User U WHERE email = :email")
    Optional<User> findByEmail(@Param("email") String email);
 
    List<User> findByUsernameOrEmail(String username, String email);

@@ -14,6 +14,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import static app.constant.FieldConstants.EMAIL;
+import static app.constant.FieldConstants.OLD_PASSWORD;
+import static app.constant.FieldConstants.USER;
+import static app.constant.FieldConstants.USERNAME;
+
 @Service
 public class UserService {
 
@@ -30,12 +35,11 @@ public class UserService {
    public User getUserById(final int id) throws ApiException {
       final Optional<User> user = userDao.findById(id);
 
-
       if (user.isPresent()) {
          return user.get();
       }
 
-      throw new ApiException("User does not exist", ValidationError.NOT_FOUND, "user");
+      throw new ApiException("User does not exist", ValidationError.NOT_FOUND, USER);
    }
 
    /**
@@ -49,23 +53,23 @@ public class UserService {
       final Optional<User> user = userDao.findById(id);
 
       if (!user.isPresent()) {
-         throw new ApiException("User does not exist", ValidationError.NOT_FOUND, "user");
+         throw new ApiException("User does not exist", ValidationError.NOT_FOUND, USER);
       }
 
       if (StringUtils.isNotBlank(updateUserData.getPassword())
             && StringUtils.isNotBlank(updateUserData.getOldPassword())) {
          if (!updateUserData.getOldPassword().equals(user.get().getPasswordHash())) {
-            throw new ApiException("Old password isn't correct", ValidationError.BAD_VALUE, "oldPassword");
+            throw new ApiException("Old password isn't correct", ValidationError.BAD_VALUE, OLD_PASSWORD);
          }
 
          user.get().setPasswordHash(updateUserData.getPassword());
       }
 
       if (StringUtils.isNotBlank(updateUserData.getEmail())) {
-         final Optional<User> existingEmail = userDao.findByEmail(updateUserData.getEmail());
+         final Optional<User> existingUser = userDao.findByEmail(updateUserData.getEmail());
 
-         if (existingEmail.isPresent()) {
-            throw new ApiException("Email already exists", ValidationError.DUPLICATE_VALUE, "email");
+         if (existingUser.isPresent()) {
+            throw new ApiException("Email already exists", ValidationError.DUPLICATE_VALUE, EMAIL);
          }
 
          user.get().setEmail(updateUserData.getEmail());
@@ -90,12 +94,13 @@ public class UserService {
 
       if (!existingUsers.isEmpty()) {
          final List<String> duplicateValueFields = new ArrayList<>();
+
          for (User existingUser: existingUsers) {
             if (existingUser.getUsername().equals(user.getUsername())) {
-               duplicateValueFields.add("username");
+               duplicateValueFields.add(USERNAME);
             }
             if (existingUser.getEmail().equals(user.getEmail())) {
-               duplicateValueFields.add("email");
+               duplicateValueFields.add(EMAIL);
             }
          }
 
