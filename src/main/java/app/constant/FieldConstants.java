@@ -10,6 +10,10 @@ public final class FieldConstants {
    public static final String PASSWORD = "password";
    public static final String OLD_PASSWORD = "oldPassword";
 
+   /* Song */
+   public static final String TITLE = "title";
+   public static final String REFERENCE = "reference";
+
    /**
     * Prevent instantiating this class.
     */
