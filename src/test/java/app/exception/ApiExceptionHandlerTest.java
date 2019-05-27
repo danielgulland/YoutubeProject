@@ -16,7 +16,6 @@ import com.google.common.collect.ImmutableList;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.nullable;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -42,7 +41,7 @@ public class ApiExceptionHandlerTest {
       final ResponseEntity response = handler.handleApiException(new ApiException(MESSAGE, error));
 
       // Assert
-      verify(validator, times(0)).check(false, ValidationError.BAD_VALUE, "email");
+      verify(validator).check(false, ValidationError.NOT_FOUND, null);
       verify(validator).getResponseEntity();
       verifyNoMoreInteractions(validator);
       Assert.assertEquals(error.getStatus(), response.getStatusCode());

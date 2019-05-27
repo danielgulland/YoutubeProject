@@ -25,8 +25,13 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
     */
    @ExceptionHandler(ApiException.class)
    public final ResponseEntity handleApiException(final ApiException ex) {
-      for (String field : ex.getFields()) {
-         validator.check(false, ex.getError(), field);
+      if (ex.getFields().isEmpty()) {
+         validator.check(false, ex.getError(), null);
+      }
+      else {
+         for (String field : ex.getFields()) {
+            validator.check(false, ex.getError(), field);
+         }
       }
       return validator.getResponseEntity();
    }
