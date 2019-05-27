@@ -96,10 +96,10 @@ public class UserService {
          final List<String> duplicateValueFields = new ArrayList<>();
 
          for (User existingUser: existingUsers) {
-            if (existingUser.getUsername().equals(user.getUsername())) {
+            if (existingUser.getUsername().toLowerCase().equals(user.getUsername().toLowerCase())) {
                duplicateValueFields.add(USERNAME);
             }
-            if (existingUser.getEmail().equals(user.getEmail())) {
+            if (existingUser.getEmail().toLowerCase().equals(user.getEmail().toLowerCase())) {
                duplicateValueFields.add(EMAIL);
             }
          }
