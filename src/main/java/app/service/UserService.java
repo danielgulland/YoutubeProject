@@ -109,4 +109,20 @@ public class UserService {
 
       userDao.save(user);
    }
+
+   /**
+    * Service call for deleting a user by id.
+    *
+    * @param id user id to check for.
+    */
+   public void deleteUserById(final int id) {
+      final Optional<User> user = userDao.findById(id);
+
+      if (user.isPresent()) {
+         userDao.deleteById(id);
+      }
+      else {
+         throw new ApiException("User does not exist", ValidationError.NOT_FOUND, "user");
+      }
+   }
 }
