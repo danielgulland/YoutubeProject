@@ -21,7 +21,7 @@ CREATE TABLE Playlist (
 CREATE TABLE Song (
   id INTEGER UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   title varchar(50) NOT NULL,
-  url varchar(250) NOT NULL UNIQUE
+  reference varchar(250) NOT NULL UNIQUE
 );
 
 CREATE TABLE Playlist_Song (
@@ -35,3 +35,4 @@ CREATE TABLE Playlist_Song (
 );
 
 INSERT INTO User (username, email, password_hash) VALUES ('test', 'test@test.com', 'test');
+INSERT INTO Song (title, reference) VALUES ('testTitle', 'testReference');

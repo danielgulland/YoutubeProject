@@ -26,6 +26,9 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class SongControllerTest {
 
+   private static final int VALID_ID = 1;
+   private static final int INVALID_ID = 0;
+   private static final String ID = "id";
    private static final String TITLE = "title";
    private static final String REFERENCE = "reference";
 
@@ -37,6 +40,44 @@ public class SongControllerTest {
 
    @InjectMocks
    private SongController controller;
+
+   @Test
+   public void testGetSongById_Success() {
+
+      // Arrange
+      final Song song = buildSong();
+      when(validator.check(true, ValidationError.BAD_VALUE, ID)).thenReturn(true);
+      when(songService.getSongById(VALID_ID)).thenReturn(song);
+
+      // Act
+      final ResponseEntity response = controller.getSongById(VALID_ID);
+
+      // Assert
+      verify(validator).check(true, ValidationError.BAD_VALUE, ID);
+      verify(songService).getSongById(VALID_ID);
+
+      Assert.assertEquals(HttpStatus.OK, response.getStatusCode());
+      Assert.assertEquals(song, response.getBody());
+   }
+
+   @Test
+   public void testGetSongById_InvalidId() {
+
+      // Arrange
+      when(validator.check(false, ValidationError.BAD_VALUE, ID)).thenReturn(false);
+      when(validator.getResponseEntity()).thenReturn(buildResponseEntity(HttpStatus.BAD_REQUEST));
+
+      // Act
+      final ResponseEntity response = controller.getSongById(INVALID_ID);
+
+      // Assert
+      verify(validator).check(false, ValidationError.BAD_VALUE, ID);
+      verifyZeroInteractions(songService);
+
+      Assert.assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+      Assert.assertNull(response.getBody());
+      
+   }
 
    @Test
    public void testCreateNewSong_Successful() {
@@ -86,6 +127,13 @@ public class SongControllerTest {
       data.setReference(REFERENCE);
 
       return data;
+   }
+
+   private Song buildSong() {
+      return Song.builder()
+            .reference(REFERENCE)
+            .title(TITLE)
+            .build();
    }
 
    private ResponseEntity buildResponseEntity(final HttpStatus status) {
