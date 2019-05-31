@@ -7,10 +7,13 @@ import app.service.UserService;
 import app.validation.ValidationError;
 import app.validation.Validator;
 
+import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -50,6 +53,25 @@ public class UserController {
       }
 
       return validator.getResponseEntity();
+   }
+
+   /**
+    * Get a list of users based on the username.
+    *
+    * @return Response with status 200 and User in the body for successful call, otherwise validation response
+    */
+   @GetMapping()
+   public ResponseEntity getUsersWithFilter(@RequestBody final String username) {
+   //      if (validator.check(StringUtils.isNotBlank(username), ValidationError.MISSING_FIELD, "username")) {
+   //         final List<User> user = userService.getUsersWithFilter(username);
+   //
+   //         return ResponseEntity.status(HttpStatus.OK).body(null);
+   //      }
+   //
+   //      return validator.getResponseEntity();
+      final List<User> users = userService.getUsersWithFilter(username);
+      System.out.println(users);
+      return ResponseEntity.status(HttpStatus.OK).body(users);
    }
 
    /**

@@ -18,4 +18,9 @@ public interface UserDao extends JpaRepository<User, Integer> {
 
    @Query("SELECT email FROM User WHERE username = :username")
    String getEmailFromUsername(@Param("username") String username);
+
+   @Query("SELECT username FROM User WHERE username LIKE CONCAT('%',:username,'%')")
+   List<User> findByUsernameWithFilter(@Param("username")String username);
+
+   List<User> findByUsernameContaining(String username);
 }

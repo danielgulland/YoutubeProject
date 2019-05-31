@@ -83,6 +83,15 @@ public class UserService {
    }
 
    /**
+    * HEY.
+    *
+    * @param username this is.
+    */
+   public List<User> getUsersWithFilter(final String username) {
+      return userDao.findByUsernameContaining(username);
+   }
+
+   /**
     * Service call for creating a new user.
     * Checks if a user already exists with the given username and password.
     *
