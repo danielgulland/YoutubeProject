@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import static app.constant.FieldConstants.EMAIL;
@@ -61,7 +62,7 @@ public class UserController {
     * @return Response with status 200 and User in the body for successful call, otherwise validation response
     */
    @GetMapping()
-   public ResponseEntity getUsersWithFilter(@RequestBody final String username) {
+   public ResponseEntity getUsersWithFilter(@RequestParam final String username) {
    //      if (validator.check(StringUtils.isNotBlank(username), ValidationError.MISSING_FIELD, "username")) {
    //         final List<User> user = userService.getUsersWithFilter(username);
    //
