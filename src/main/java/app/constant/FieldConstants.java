@@ -11,6 +11,7 @@ public final class FieldConstants {
    public static final String OLD_PASSWORD = "oldPassword";
 
    /* Song */
+   public static final String SONG = "song";
    public static final String TITLE = "title";
    public static final String REFERENCE = "reference";
 

@@ -45,9 +45,7 @@ public class UserController {
    @GetMapping("/{id}")
    public ResponseEntity getUserById(@PathVariable final int id) {
       if (validator.check(id > 0, ValidationError.BAD_VALUE, ID)) {
-         final User user = userService.getUserById(id);
-
-         return ResponseEntity.status(HttpStatus.OK).body(user);
+         return ResponseEntity.status(HttpStatus.OK).body(userService.getUserById(id));
       }
 
       return validator.getResponseEntity();
