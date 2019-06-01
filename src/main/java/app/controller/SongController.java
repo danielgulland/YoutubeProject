@@ -40,9 +40,7 @@ public class SongController {
    @GetMapping("/{id}")
    public ResponseEntity getSongById(@PathVariable final int id) {
       if (validator.check(id > 0, ValidationError.BAD_VALUE, ID)) {
-         final Song song = songService.getSongById(id);
-
-         return ResponseEntity.status(HttpStatus.OK).body(song);
+         return ResponseEntity.status(HttpStatus.OK).body(songService.getSongById(id));
       }
 
       return validator.getResponseEntity();
