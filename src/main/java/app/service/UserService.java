@@ -83,12 +83,21 @@ public class UserService {
    }
 
    /**
-    * HEY.
+    * Service call to get users by id.
     *
-    * @param username this is.
+    * @param username User's username to check for.
+    * @return List of Users that match the username.
+    * @throws ApiException if no User exists for given id.
     */
    public List<User> getUsersWithFilter(final String username) {
-      return userDao.findByUsernameContaining(username);
+      final List<User> existingUsers = userDao.findByUsernameContaining(username);
+
+      if (existingUsers.isEmpty()) {
+         throw new ApiException("No users found with that username", ValidationError.NOT_FOUND, "user");
+      }
+      else {
+         return existingUsers;
+      }
    }
 
    /**

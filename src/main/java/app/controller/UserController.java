@@ -13,7 +13,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -48,30 +47,30 @@ public class UserController {
    @GetMapping("/{id}")
    public ResponseEntity getUserById(@PathVariable final int id) {
       if (validator.check(id > 0, ValidationError.BAD_VALUE, ID)) {
-         final User user = userService.getUserById(id);
+         final User users = userService.getUserById(id);
 
-         return ResponseEntity.status(HttpStatus.OK).body(user);
+         return ResponseEntity.status(HttpStatus.OK).body(users);
       }
 
       return validator.getResponseEntity();
    }
 
    /**
-    * Get a list of users based on the username.
+    * Get a list of users based on the username, otherwise every user when username is blank.
     *
-    * @return Response with status 200 and User in the body for successful call, otherwise validation response
+    * @param username username to search for.
+    * @return Response with status 200 and User in the body for successful call.
     */
    @GetMapping()
-   public ResponseEntity getUsersWithFilter(@RequestParam final String username) {
-   //      if (validator.check(StringUtils.isNotBlank(username), ValidationError.MISSING_FIELD, "username")) {
-   //         final List<User> user = userService.getUsersWithFilter(username);
-   //
-   //         return ResponseEntity.status(HttpStatus.OK).body(null);
-   //      }
-   //
-   //      return validator.getResponseEntity();
-      final List<User> users = userService.getUsersWithFilter(username);
-      System.out.println(users);
+   public ResponseEntity getUsersWithFilter(@RequestParam(required = false) final String username) {
+      final List<User> users;
+      if (StringUtils.isNotBlank(username)) {
+         users = userService.getUsersWithFilter(username);
+      }
+      else {
+         users = userService.getAllUsers();
+      }
+
       return ResponseEntity.status(HttpStatus.OK).body(users);
    }
 
