@@ -25,6 +25,8 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
     */
    @ExceptionHandler(ApiException.class)
    public final ResponseEntity handleApiException(final ApiException ex) {
+      System.out.println(ex.toString());
+
       if (ex.getFields().isEmpty()) {
          validator.check(false, ex.getError(), null);
       }
@@ -44,7 +46,8 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
     */
    @ExceptionHandler(Exception.class)
    public final ResponseEntity handleServerError(final Exception ex) {
-      System.err.println(ex.toString());
+      ex.printStackTrace();
+
       return validator.chain(false, SERVER_ERROR, null).getResponseEntity();
    }
 }

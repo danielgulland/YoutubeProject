@@ -291,7 +291,43 @@ public class UserControllerTest {
 
       Assert.assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
       Assert.assertNotNull(responseEntity.getBody());
+   }
 
+   @Test
+   public void testDeleteUserById_ValidId() {
+      //Arrange
+      when(validator.check(true, ValidationError.BAD_VALUE, "id")).thenReturn(true);
+
+      //Act
+      final ResponseEntity responseEntity = controller.deleteUserById(ID);
+
+      //Assert
+      verify(validator).check(true, ValidationError.BAD_VALUE, "id");
+      verify(userService).deleteUserById(ID);
+      verifyNoMoreInteractions(validator);
+      verifyNoMoreInteractions(userService);
+
+      Assert.assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+      Assert.assertNull(responseEntity.getBody());
+   }
+
+   @Test
+   public void testDeleteUserById_InvalidId() {
+      //Arrange
+      when(validator.check(false, ValidationError.BAD_VALUE, "id")).thenReturn(false);
+      when(validator.getResponseEntity()).thenReturn(buildResponseEntity(HttpStatus.BAD_REQUEST));
+
+      //Act
+      final ResponseEntity responseEntity = controller.deleteUserById(INVALID_ID);
+
+      //Assert
+      verify(validator).check(false, ValidationError.BAD_VALUE, "id");
+      verify(validator).getResponseEntity();
+      verifyNoMoreInteractions(validator);
+      verifyZeroInteractions(userService);
+
+      Assert.assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
+      Assert.assertNull(responseEntity.getBody());
    }
 
    private RegistrationData buildRegistrationData() {

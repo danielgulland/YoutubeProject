@@ -11,12 +11,30 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import static app.constant.FieldConstants.REFERENCE;
+import static app.constant.FieldConstants.SONG;
 
 @Service
 public class SongService {
 
    @Autowired
    private SongDao songDao;
+
+   /**
+    * Service call to get a song by id.
+    *
+    * @param id song id to check for
+    * @return Song found for given id
+    * @throws ApiException if no Song exists for given id
+    */
+   public Song getSongById(final int id) throws ApiException {
+      final Optional<Song> song = songDao.findById(id);
+
+      if (song.isPresent()) {
+         return song.get();
+      }
+
+      throw new ApiException("Song does not exist", ValidationError.NOT_FOUND, SONG);
+   }
 
    /**
     * Service call for creating a new song.

@@ -13,6 +13,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -47,9 +48,7 @@ public class UserController {
    @GetMapping("/{id}")
    public ResponseEntity getUserById(@PathVariable final int id) {
       if (validator.check(id > 0, ValidationError.BAD_VALUE, ID)) {
-         final User user = userService.getUserById(id);
-
-         return ResponseEntity.status(HttpStatus.OK).body(user);
+         return ResponseEntity.status(HttpStatus.OK).body(userService.getUserById(id));
       }
 
       return validator.getResponseEntity();
@@ -107,6 +106,23 @@ public class UserController {
             .check(StringUtils.isNotBlank(registrationData.getPassword()), ValidationError.MISSING_FIELD, PASSWORD)
             && validator.check(registrationData.getEmail().contains("@"), ValidationError.BAD_VALUE, EMAIL)) {
          userService.createNewUser(buildUserFromRegistrationData(registrationData));
+
+         return ResponseEntity.status(HttpStatus.OK).body(null);
+      }
+
+      return validator.getResponseEntity();
+   }
+
+   /**
+    * Delete a User by the user id.
+    *
+    * @param id user id.
+    * @return Response with status 200 and null in the body for successful call, otherwise validation response.
+    */
+   @DeleteMapping("/{id}")
+   public ResponseEntity deleteUserById(@PathVariable final int id) {
+      if (validator.check(id > 0, ValidationError.BAD_VALUE, "id")) {
+         userService.deleteUserById(id);
 
          return ResponseEntity.status(HttpStatus.OK).body(null);
       }

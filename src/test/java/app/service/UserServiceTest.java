@@ -33,6 +33,7 @@ import static org.mockito.Mockito.when;
 public class UserServiceTest {
 
    private static final int USER_ID = 1;
+   private static final int INVALID_ID = 0;
    private static final String USERNAME = "testUser";
    private static final String INVALID_USERNAME = " ";
    private static final String EMAIL = "test@email.com";
@@ -407,6 +408,41 @@ public class UserServiceTest {
       verifyNoMoreInteractions(userDao);
 
       Assert.assertFalse(existingUsers.isEmpty());
+   }
+   
+   @Test
+   public void testDeleteUserById_validID() {
+      //Arrange
+      final User user = buildUser();
+      when(userDao.findById(USER_ID)).thenReturn(Optional.of(user));
+
+      //Act
+      userService.deleteUserById(USER_ID);
+
+      //Assert
+      verify(userDao).findById(USER_ID);
+      verify(userDao).deleteById(USER_ID);
+      verifyNoMoreInteractions(userDao);
+   }
+
+   @Test
+   public void testDeleteUserById_invalidID() {
+      //Arrange
+      when(userDao.findById(INVALID_ID)).thenReturn(Optional.empty());
+
+      //Act
+      try {
+         userService.deleteUserById(INVALID_ID);
+         fail("Exception not thrown");
+      } catch (ApiException ex) {
+         //Assert
+         verify(userDao).findById(INVALID_ID);
+         verifyNoMoreInteractions(userDao);
+
+         Assert.assertEquals(ValidationError.NOT_FOUND, ex.getError());
+         Assert.assertEquals("User does not exist", ex.getMessage());
+         Assert.assertEquals(1, ex.getFields().size());
+      }
    }
 
    private User buildUser() {
