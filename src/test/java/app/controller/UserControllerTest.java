@@ -16,6 +16,8 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import com.google.common.collect.ImmutableList;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -32,6 +34,7 @@ public class UserControllerTest {
    private static final int ID = 1;
    private static final int INVALID_ID = 0;
    private static final String USERNAME = "test";
+   private static final String INVALID_USERNAME = " ";
    private static final String EMAIL = "test@test.com";
    private static final String INVALID_EMAIL = "bademail.com";
    private static final String PASSWORD = "password";
@@ -253,6 +256,41 @@ public class UserControllerTest {
 
       Assert.assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
       Assert.assertNull(responseEntity.getBody());
+   }
+
+   @Test
+   public void testGetUsers_getAll() {
+      //Arrange
+      final User users = buildUser();
+      when(userService.getAllUsers()).thenReturn(ImmutableList.of(users));
+
+      //Act
+      final ResponseEntity responseEntity = controller.getUsers(INVALID_USERNAME);
+
+      //Assert
+      verify(userService).getAllUsers();
+      verifyNoMoreInteractions(userService);
+
+      Assert.assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+      Assert.assertNotNull(responseEntity.getBody());
+
+   }
+
+   @Test
+   public void testGetUsers_getUsersWithFilter() {
+      //Arrange
+      final User users = buildUser();
+      when(userService.getUsersWithFilter(USERNAME)).thenReturn(ImmutableList.of(users));
+
+      //Act
+      final ResponseEntity responseEntity = controller.getUsers((USERNAME));
+
+      //Assert
+      verify(userService).getUsersWithFilter(USERNAME);
+      verifyNoMoreInteractions(userService);
+
+      Assert.assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+      Assert.assertNotNull(responseEntity.getBody());
    }
 
    @Test

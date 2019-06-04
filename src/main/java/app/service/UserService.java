@@ -83,6 +83,17 @@ public class UserService {
    }
 
    /**
+    * Service call to get users by username.
+    *
+    * @param username Username to filter by.
+    * @return List of Users that match the username.
+    * @throws ApiException if no User exists for given username.
+    */
+   public List<User> getUsersWithFilter(final String username) {
+      return userDao.findByUsernameStartingWith(username);
+   }
+
+   /**
     * Service call for creating a new user.
     * Checks if a user already exists with the given username and password.
     *

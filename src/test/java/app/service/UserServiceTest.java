@@ -35,6 +35,7 @@ public class UserServiceTest {
    private static final int USER_ID = 1;
    private static final int INVALID_ID = 0;
    private static final String USERNAME = "testUser";
+   private static final String INVALID_USERNAME = " ";
    private static final String EMAIL = "test@email.com";
    private static final String PASSWORD = "password";
    private static final String OLD_PASSWORD = "oldPassword";
@@ -394,6 +395,22 @@ public class UserServiceTest {
    }
 
    @Test
+   public void testGetUsersWithFilter_validUsername() {
+      //Arrange
+      final User users = buildUser();
+      when(userDao.findByUsernameStartingWith(USERNAME)).thenReturn(ImmutableList.of(users));
+
+      //Act
+      final List<User> existingUsers = userService.getUsersWithFilter(USERNAME);
+
+      //Assert
+      verify(userDao).findByUsernameStartingWith(USERNAME);
+      verifyNoMoreInteractions(userDao);
+
+      Assert.assertFalse(existingUsers.isEmpty());
+   }
+   
+   @Test
    public void testDeleteUserById_validID() {
       //Arrange
       final User user = buildUser();
@@ -426,7 +443,6 @@ public class UserServiceTest {
          Assert.assertEquals("User does not exist", ex.getMessage());
          Assert.assertEquals(1, ex.getFields().size());
       }
-
    }
 
    private User buildUser() {

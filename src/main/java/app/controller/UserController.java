@@ -7,6 +7,8 @@ import app.service.UserService;
 import app.validation.ValidationError;
 import app.validation.Validator;
 
+import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import static app.constant.FieldConstants.EMAIL;
@@ -49,6 +52,25 @@ public class UserController {
       }
 
       return validator.getResponseEntity();
+   }
+
+   /**
+    * Get a list of users based on the username, otherwise every user when username is blank.
+    *
+    * @param username username or username prefix to search for.
+    * @return Response with status 200 and User in the body for successful call.
+    */
+   @GetMapping()
+   public ResponseEntity getUsers(@RequestParam(required = false) final String username) {
+      final List<User> users;
+      if (StringUtils.isNotBlank(username)) {
+         users = userService.getUsersWithFilter(username);
+      }
+      else {
+         users = userService.getAllUsers();
+      }
+
+      return ResponseEntity.status(HttpStatus.OK).body(users);
    }
 
    /**
