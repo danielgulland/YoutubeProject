@@ -259,13 +259,13 @@ public class UserControllerTest {
    }
 
    @Test
-   public void testGetUsersWithFilter_getAll() {
+   public void testGetUsers_getAll() {
       //Arrange
       final User users = buildUser();
       when(userService.getAllUsers()).thenReturn(ImmutableList.of(users));
 
       //Act
-      final ResponseEntity responseEntity = controller.getUsersWithFilter(INVALID_USERNAME);
+      final ResponseEntity responseEntity = controller.getUsers(INVALID_USERNAME);
 
       //Assert
       verify(userService).getAllUsers();
@@ -274,17 +274,16 @@ public class UserControllerTest {
       Assert.assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
       Assert.assertNotNull(responseEntity.getBody());
 
-
    }
 
    @Test
-   public void testGetUsersWithFilter_getUsersWithFilter() {
+   public void testGetUsers_getUsersWithFilter() {
       //Arrange
       final User users = buildUser();
       when(userService.getUsersWithFilter(USERNAME)).thenReturn(ImmutableList.of(users));
 
       //Act
-      final ResponseEntity responseEntity = controller.getUsersWithFilter((USERNAME));
+      final ResponseEntity responseEntity = controller.getUsers((USERNAME));
 
       //Assert
       verify(userService).getUsersWithFilter(USERNAME);

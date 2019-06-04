@@ -47,9 +47,9 @@ public class UserController {
    @GetMapping("/{id}")
    public ResponseEntity getUserById(@PathVariable final int id) {
       if (validator.check(id > 0, ValidationError.BAD_VALUE, ID)) {
-         final User users = userService.getUserById(id);
+         final User user = userService.getUserById(id);
 
-         return ResponseEntity.status(HttpStatus.OK).body(users);
+         return ResponseEntity.status(HttpStatus.OK).body(user);
       }
 
       return validator.getResponseEntity();
@@ -58,11 +58,11 @@ public class UserController {
    /**
     * Get a list of users based on the username, otherwise every user when username is blank.
     *
-    * @param username username to search for.
+    * @param username username or username prefix to search for.
     * @return Response with status 200 and User in the body for successful call.
     */
    @GetMapping()
-   public ResponseEntity getUsersWithFilter(@RequestParam(required = false) final String username) {
+   public ResponseEntity getUsers(@RequestParam(required = false) final String username) {
       final List<User> users;
       if (StringUtils.isNotBlank(username)) {
          users = userService.getUsersWithFilter(username);

@@ -397,37 +397,16 @@ public class UserServiceTest {
    public void testGetUsersWithFilter_validUsername() {
       //Arrange
       final User users = buildUser();
-      when(userDao.findByUsernameContaining(USERNAME)).thenReturn(ImmutableList.of(users));
+      when(userDao.findByUsernameStartingWith(USERNAME)).thenReturn(ImmutableList.of(users));
 
       //Act
       final List<User> existingUsers = userService.getUsersWithFilter(USERNAME);
 
       //Assert
-      verify(userDao).findByUsernameContaining(USERNAME);
+      verify(userDao).findByUsernameStartingWith(USERNAME);
       verifyNoMoreInteractions(userDao);
 
       Assert.assertFalse(existingUsers.isEmpty());
-   }
-
-   @Test
-   public void testGetUsersWithFilter_invalidUsername() {
-      //Arrange
-      when(userDao.findByUsernameContaining(INVALID_USERNAME)).thenReturn(Collections.emptyList());
-
-      try {
-         //Act
-         userService.getUsersWithFilter(INVALID_USERNAME);
-         fail("Exception not thrown");
-      } catch (ApiException ex) {
-         //Assert
-         verify(userDao).findByUsernameContaining(INVALID_USERNAME);
-         verifyNoMoreInteractions(userDao);
-
-         Assert.assertEquals("No users found with that username", ex.getMessage());
-         Assert.assertEquals(ValidationError.NOT_FOUND, ex.getError());
-         Assert.assertEquals("user", ex.getFields().get(0));
-      }
-
    }
 
    private User buildUser() {
