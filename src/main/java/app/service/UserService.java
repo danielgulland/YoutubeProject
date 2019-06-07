@@ -133,7 +133,7 @@ public class UserService {
          userDao.deleteById(id);
       }
       else {
-         throw new ApiException("User does not exist", ValidationError.NOT_FOUND, "user");
+         throw new ApiException("User does not exist", ValidationError.NOT_FOUND, USER);
       }
    }
 }
