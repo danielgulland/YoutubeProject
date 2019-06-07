@@ -33,6 +33,19 @@ public class ApiException extends RuntimeException {
    }
 
    /**
+    * ApiException Constructor for message, error and cause.
+    *
+    * @param message the detail message
+    * @param error ValidationError signifying the reason for the exception
+    * @param cause related exception that caused the exception
+    */
+   public ApiException(final String message, final ValidationError error, final Throwable cause) {
+      super(message, cause);
+      this.error = error;
+      this.fields = Collections.emptyList();
+   }
+
+   /**
     * ApiException Constructor for message, error and field.
     *
     * @param message the detail message

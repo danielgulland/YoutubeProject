@@ -29,6 +29,19 @@ public class ApiExceptionTest {
    }
 
    @Test
+   public void testApiException_MessageErrorAndCause() {
+      // Act
+      final NullPointerException npe = new NullPointerException();
+      final ApiException apiException = new ApiException(MESSAGE, ERROR, npe);
+
+      // Assert
+      Assert.assertEquals(MESSAGE, apiException.getMessage());
+      Assert.assertEquals(ERROR, apiException.getError());
+      Assert.assertTrue(apiException.getFields().isEmpty());
+      Assert.assertEquals(npe, apiException.getCause());
+   }
+
+   @Test
    public void testApiException_MessageErrorAndField() {
 
       // Act
