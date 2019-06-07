@@ -6,6 +6,8 @@ import app.service.SongService;
 import app.validation.ValidationError;
 import app.validation.Validator;
 
+import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import static app.constant.FieldConstants.ID;
@@ -44,6 +47,25 @@ public class SongController {
       }
 
       return validator.getResponseEntity();
+   }
+
+   /**
+    * Get a list of songs by the title, if title is empty return all songs.
+    *
+    * @param title title used to search for songs
+    * @return Response with status 200 and Song in the body for successful call
+    */
+   @GetMapping()
+   public ResponseEntity getSongs(@RequestParam(required = false) final String title) {
+      final List<Song> songs;
+      if (StringUtils.isNotBlank(title)) {
+         songs = songService.getSongsByFilter(title);
+      }
+      else {
+         songs = songService.getAllSongs();
+      }
+
+      return ResponseEntity.status(HttpStatus.OK).body(songs);
    }
 
    /**

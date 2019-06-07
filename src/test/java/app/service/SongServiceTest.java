@@ -5,6 +5,7 @@ import app.exception.ApiException;
 import app.model.Song;
 import app.validation.ValidationError;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.Assert;
@@ -13,6 +14,8 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+
+import com.google.common.collect.ImmutableList;
 
 import static org.assertj.core.api.Fail.fail;
 import static org.mockito.ArgumentMatchers.any;
@@ -107,6 +110,40 @@ public class SongServiceTest {
          Assert.assertEquals(1, ex.getFields().size());
          Assert.assertTrue(ex.getFields().contains("reference"));
       }
+   }
+
+   @Test
+   public void testGetAllSongs() {
+
+      //Arrange
+      final Song song = buildSong();
+      when(songDao.findAll()).thenReturn(ImmutableList.of(song));
+
+      //Act
+      final List<Song> songs = songService.getAllSongs();
+
+      //Assert
+      verify(songDao).findAll();
+      verifyNoMoreInteractions(songDao);
+
+      Assert.assertFalse(songs.isEmpty());
+   }
+
+   @Test
+   public void testGetSongsByFilter_ValidTitle() {
+
+      //Arrange
+      final Song song = buildSong();
+      when(songDao.findByTitleContaining(TITLE)).thenReturn(ImmutableList.of(song));
+
+      //Act
+      final List<Song> songs = songService.getSongsByFilter(TITLE);
+
+      //Assert
+      verify(songDao).findByTitleContaining(TITLE);
+      verifyNoMoreInteractions(songDao);
+
+      Assert.assertFalse(songs.isEmpty());
    }
 
    private Song buildSong() {

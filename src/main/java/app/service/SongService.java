@@ -5,6 +5,7 @@ import app.exception.ApiException;
 import app.model.Song;
 import app.validation.ValidationError;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +35,25 @@ public class SongService {
       }
 
       throw new ApiException("Song does not exist", ValidationError.NOT_FOUND, SONG);
+   }
+
+   /**
+    * Service call to get a list of all songs.
+    *
+    * @return List of all songs
+    */
+   public List<Song> getAllSongs() {
+      return songDao.findAll();
+   }
+
+   /**
+    * Service call to get a list of songs based on the title.
+    *
+    * @param title title used to search for songs
+    * @return List of songs that match the title
+    */
+   public List<Song> getSongsByFilter(final String title) {
+      return songDao.findByTitleContaining(title);
    }
 
    /**
