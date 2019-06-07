@@ -6,10 +6,14 @@ import app.exception.ApiException;
 import app.model.PasswordReset;
 import app.model.User;
 import app.request.PasswordResetData;
+import app.util.EmailUtils;
 import app.validation.ValidationError;
 
+import java.io.UnsupportedEncodingException;
 import java.time.ZonedDateTime;
 import java.util.Optional;
+
+import javax.mail.MessagingException;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -22,6 +26,8 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.assertj.core.api.Fail.fail;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.verifyZeroInteractions;
@@ -43,6 +49,9 @@ public class PasswordResetServiceTest {
    @Mock
    private UserDao userDao;
 
+   @Mock
+   private EmailUtils emailUtils;
+
    @InjectMocks
    private PasswordResetService passwordResetService;
 
@@ -50,7 +59,7 @@ public class PasswordResetServiceTest {
    private ArgumentCaptor<User> userArgumentCaptor;
 
    @Test
-   public void testForgotPassword_successful() {
+   public void testForgotPassword_successful() throws UnsupportedEncodingException, MessagingException {
       // Arrange
       when(userDao.findByEmail(EMAIL)).thenReturn(Optional.of(buildUser()));
 
@@ -60,8 +69,34 @@ public class PasswordResetServiceTest {
       // Assert
       verify(userDao).findByEmail(EMAIL);
       verifyNoMoreInteractions(userDao);
+      verify(emailUtils).sendEmail(anyString(), anyString(), anyString());
+      verifyNoMoreInteractions(emailUtils);
       verify(passwordResetDao).save(any(PasswordReset.class));
       verifyNoMoreInteractions(passwordResetDao);
+   }
+
+   @Test
+   public void testForgotPassword_sendEmailFailed() throws UnsupportedEncodingException, MessagingException {
+      // Arrange
+      when(userDao.findByEmail(EMAIL)).thenReturn(Optional.of(buildUser()));
+      doThrow(MessagingException.class).when(emailUtils).sendEmail(anyString(), anyString(), anyString());
+
+      // Act
+      try {
+         passwordResetService.forgotPassword(EMAIL);
+         fail("Exception not thrown");
+      } catch (ApiException ex) {
+         // Assert
+         verify(userDao).findByEmail(EMAIL);
+         verifyNoMoreInteractions(userDao);
+         verify(emailUtils).sendEmail(anyString(), anyString(), anyString());
+         verifyNoMoreInteractions(emailUtils);
+         verifyZeroInteractions(passwordResetDao);
+
+         Assert.assertEquals(ValidationError.INTERNAL_SERVER_ERROR, ex.getError());
+         Assert.assertTrue(ex.getFields().isEmpty());
+         Assert.assertEquals("Unable to send email", ex.getMessage());
+      }
    }
 
    @Test

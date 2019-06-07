@@ -2,6 +2,7 @@ package app.controller;
 
 import app.request.PasswordResetData;
 import app.service.PasswordResetService;
+import app.util.EmailUtils;
 import app.validation.ValidationError;
 import app.validation.Validator;
 
@@ -42,7 +43,7 @@ public class PasswordResetController {
       final String email = data.get(EMAIL);
 
       if (validator.check(StringUtils.isNotBlank(email), ValidationError.MISSING_FIELD, EMAIL)
-            && validator.check(email.contains("@"), ValidationError.BAD_VALUE, EMAIL)) {
+            && validator.check(EmailUtils.isEmailValid(email), ValidationError.BAD_VALUE, EMAIL)) {
          passwordResetService.forgotPassword(email);
       }
 

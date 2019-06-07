@@ -6,12 +6,16 @@ import app.exception.ApiException;
 import app.model.PasswordReset;
 import app.model.User;
 import app.request.PasswordResetData;
+import app.util.EmailUtils;
 import app.validation.ValidationError;
 import lombok.NonNull;
 
+import java.io.UnsupportedEncodingException;
 import java.time.ZonedDateTime;
 import java.util.Optional;
 import java.util.UUID;
+
+import javax.mail.MessagingException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,8 +32,13 @@ public class PasswordResetService {
    @Autowired
    private UserDao userDao;
 
+   @Autowired
+   private EmailUtils emailUtils;
+
    // Time in minutes before password reset token expires
    private static final long EXPIRES_IN = 30;
+   private static final String EMAIL_SUBJECT = "Reset Your Password";
+   private static final String RESET_LINK_FORMAT = "http://localhost:8000/api/resetpassword?userId=%d&token=%s";
 
    /**
     * Service call to create a forgotten password token.
@@ -52,7 +61,11 @@ public class PasswordResetService {
             .expires(ZonedDateTime.now().plusMinutes(EXPIRES_IN))
             .build();
 
-      // TODO: send out password reset email
+      try {
+         emailUtils.sendEmail(email, EMAIL_SUBJECT, generateContent(user.get(), token));
+      } catch (MessagingException | UnsupportedEncodingException exception) {
+         throw new ApiException("Unable to send email", ValidationError.INTERNAL_SERVER_ERROR, exception);
+      }
 
       passwordResetDao.save(passwordReset);
    }
@@ -90,5 +103,15 @@ public class PasswordResetService {
 
       userDao.save(user);
       passwordResetDao.delete(passwordReset);
+   }
+
+   private String generateContent(final User user, final String token) {
+      final String resetUrl = String.format(RESET_LINK_FORMAT, user.getId(), token);
+
+      return String.format("<h4>Hey %s!<h4>", user.getUsername())
+            + "<p>You are receiving this email because you requested to reset your password. "
+            + "If you did not make this request, you can safely ignore this email.</p>"
+            + "<p>Please follow the link below to reset your password:</p>"
+            + String.format("<a href=\"%s\">%s</a>", resetUrl, resetUrl);
    }
 }
