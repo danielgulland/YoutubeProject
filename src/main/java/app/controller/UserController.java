@@ -4,6 +4,7 @@ import app.model.User;
 import app.request.RegistrationData;
 import app.request.UpdateUserData;
 import app.service.UserService;
+import app.util.EmailUtils;
 import app.validation.ValidationError;
 import app.validation.Validator;
 
@@ -104,7 +105,7 @@ public class UserController {
       if (validator.chain(StringUtils.isNotBlank(registrationData.getEmail()), ValidationError.MISSING_FIELD, EMAIL)
             .chain(StringUtils.isNotBlank(registrationData.getUsername()), ValidationError.MISSING_FIELD, USERNAME)
             .check(StringUtils.isNotBlank(registrationData.getPassword()), ValidationError.MISSING_FIELD, PASSWORD)
-            && validator.check(registrationData.getEmail().contains("@"), ValidationError.BAD_VALUE, EMAIL)) {
+            && validator.check(isEmailValid(registrationData.getEmail()), ValidationError.BAD_VALUE, EMAIL)) {
          userService.createNewUser(buildUserFromRegistrationData(registrationData));
 
          return ResponseEntity.status(HttpStatus.OK).body(null);
@@ -121,7 +122,7 @@ public class UserController {
     */
    @DeleteMapping("/{id}")
    public ResponseEntity deleteUserById(@PathVariable final int id) {
-      if (validator.check(id > 0, ValidationError.BAD_VALUE, "id")) {
+      if (validator.check(id > 0, ValidationError.BAD_VALUE, ID)) {
          userService.deleteUserById(id);
 
          return ResponseEntity.status(HttpStatus.OK).body(null);
@@ -140,7 +141,7 @@ public class UserController {
 
    private boolean isEmailValid(final String email) {
       return StringUtils.isBlank(email)
-            || email.contains("@");
+            || EmailUtils.isEmailValid(email);
    }
 
    private boolean isPasswordValid(final String password, final String oldPassword) {
