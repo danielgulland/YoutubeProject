@@ -28,7 +28,8 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class SongServiceTest {
 
-   private static final int SONG_ID = 1;
+   private static final int VALID_ID = 1;
+   private static final int INVALID_ID = 1;
    private static final String SONG = "song";
    private static final String TITLE = "title";
    private static final String REFERENCE = "reference";
@@ -46,10 +47,10 @@ public class SongServiceTest {
       when(songDao.findById(anyInt())).thenReturn(Optional.of(buildSong()));
 
       // Act
-      final Song response = songService.getSongById(SONG_ID);
+      final Song response = songService.getSongById(VALID_ID);
 
       // Assert
-      verify(songDao).findById(SONG_ID);
+      verify(songDao).findById(VALID_ID);
 
       Assert.assertEquals(REFERENCE, response.getReference());
       Assert.assertEquals(TITLE, response.getTitle());
@@ -63,7 +64,7 @@ public class SongServiceTest {
 
       // Act
       try {
-         final Song response = songService.getSongById(SONG_ID);
+         final Song response = songService.getSongById(VALID_ID);
          fail("Exception not thrown");
       } catch (ApiException ex) {
          // Assert
@@ -75,7 +76,7 @@ public class SongServiceTest {
    }
 
    @Test
-   public void testCreateNewUser_Success() {
+   public void testCreateNewSong_Success() {
 
       // Arrange
       final Song song = buildSong();
@@ -90,7 +91,7 @@ public class SongServiceTest {
    }
 
    @Test
-   public void testCreateNewUser_DuplicateUrl() {
+   public void testCreateNewSong_DuplicateReference() {
 
       // Arrange
       final Song song = buildSong();
@@ -108,7 +109,44 @@ public class SongServiceTest {
          Assert.assertEquals("Song already exists", ex.getMessage());
          Assert.assertEquals(ValidationError.DUPLICATE_VALUE, ex.getError());
          Assert.assertEquals(1, ex.getFields().size());
-         Assert.assertTrue(ex.getFields().contains("reference"));
+         Assert.assertTrue(ex.getFields().contains(REFERENCE));
+      }
+   }
+
+   @Test
+   public void testDeleteSongById_ValidId() {
+
+      // Arrange
+      when(songDao.findById(VALID_ID)).thenReturn(Optional.of(buildSong()));
+
+      // Act
+      songService.deleteSongById(VALID_ID);
+
+      // Assert
+      verify(songDao).findById(VALID_ID);
+      verify(songDao).deleteById(VALID_ID);
+      verifyNoMoreInteractions(songDao);
+   }
+
+   @Test
+   public void testDeleteSongById_InvalidId() {
+
+      // Arrange
+      when(songDao.findById(INVALID_ID)).thenReturn(Optional.empty());
+
+      // Act
+      try {
+         songService.deleteSongById(INVALID_ID);
+         fail("Exception not thrown");
+      } catch (ApiException ex) {
+         // Assert
+         verify(songDao).findById(INVALID_ID);
+         verifyNoMoreInteractions(songDao);
+
+         Assert.assertEquals("Song does not exist", ex.getMessage());
+         Assert.assertEquals(ValidationError.NOT_FOUND, ex.getError());
+         Assert.assertTrue(ex.getFields().size() == 1);
+         Assert.assertTrue(ex.getFields().contains(SONG));
       }
    }
 

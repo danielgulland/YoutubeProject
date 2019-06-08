@@ -124,7 +124,7 @@ public class UserService {
    /**
     * Service call for deleting a user by id.
     *
-    * @param id user id to check for.
+    * @param id user id to check for
     */
    public void deleteUserById(final int id) {
       final Optional<User> user = userDao.findById(id);

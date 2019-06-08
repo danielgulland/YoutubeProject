@@ -58,8 +58,8 @@ public class UserController {
    /**
     * Get a list of users based on the username, otherwise every user when username is blank.
     *
-    * @param username username or username prefix to search for.
-    * @return Response with status 200 and User in the body for successful call.
+    * @param username username or username prefix to search for
+    * @return Response with status 200 and User in the body for successful call
     */
    @GetMapping()
    public ResponseEntity getUsers(@RequestParam(required = false) final String username) {
@@ -117,8 +117,8 @@ public class UserController {
    /**
     * Delete a User by the user id.
     *
-    * @param id user id.
-    * @return Response with status 200 and null in the body for successful call, otherwise validation response.
+    * @param id user id
+    * @return Response with status 200 and null in the body for successful call, otherwise validation response
     */
    @DeleteMapping("/{id}")
    public ResponseEntity deleteUserById(@PathVariable final int id) {
