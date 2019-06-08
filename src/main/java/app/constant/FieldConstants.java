@@ -19,6 +19,10 @@ public final class FieldConstants {
    /* PasswordReset */
    public static final String TOKEN = "token";
 
+   /* Playlist */
+   public static final String NAME = "name";
+   public static final String GENRE = "genre";
+
    /**
     * Prevent instantiating this class.
     */

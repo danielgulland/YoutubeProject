@@ -12,8 +12,11 @@ CREATE TABLE User (
 CREATE TABLE Playlist (
     id INTEGER UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(50) NOT NULL,
-    private BOOLEAN NOT NULL,
     user_id INTEGER UNSIGNED NOT NULL,
+	total_listens INTEGER UNSIGNED DEFAULT 0,
+	private BOOLEAN NOT NULL DEFAULT false,
+	genre VARCHAR(50) NOT NULL,
+    date_created DATETIME NOT NULL,
     FOREIGN KEY (user_id)
         REFERENCES User (id)
 );
