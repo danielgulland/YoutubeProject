@@ -15,6 +15,8 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import com.google.common.collect.ImmutableList;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -30,6 +32,7 @@ public class SongControllerTest {
    private static final int INVALID_ID = 0;
    private static final String ID = "id";
    private static final String TITLE = "title";
+   private static final String INVALID_TITLE = " ";
    private static final String REFERENCE = "reference";
 
    @Mock
@@ -119,6 +122,42 @@ public class SongControllerTest {
       Assert.assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
       Assert.assertNull(response.getBody());
 
+   }
+
+   @Test
+   public void testGetSongs_getSongsByFilter() {
+
+      //Arrange
+      final Song songs = buildSong();
+      when(songService.getSongsByFilter(TITLE)).thenReturn(ImmutableList.of(songs));
+
+      //Act
+      final ResponseEntity responseEntity = controller.getSongs(TITLE);
+
+      //Assert
+      verify(songService).getSongsByFilter(TITLE);
+      verifyNoMoreInteractions(songService);
+
+      Assert.assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+      Assert.assertNotNull(responseEntity.getBody());
+   }
+
+   @Test
+   public void testGetSongs_getAllSongs() {
+
+      //Arrange
+      final Song songs = buildSong();
+      when(songService.getAllSongs()).thenReturn(ImmutableList.of(songs));
+
+      //Act
+      final ResponseEntity responseEntity = controller.getSongs(INVALID_TITLE);
+
+      //Assert
+      verify(songService).getAllSongs();
+      verifyNoMoreInteractions(songService);
+
+      Assert.assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+      Assert.assertNotNull(responseEntity.getBody());
    }
 
    private CreateSongData buildCreateSongModel() {
