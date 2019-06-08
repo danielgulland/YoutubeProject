@@ -71,4 +71,21 @@ public class SongService {
 
       songDao.save(song);
    }
+
+   /**
+    * Service call for deleting a song by id.
+    *
+    * @param id song id to check for
+    */
+   public void deleteSongById(final int id) {
+      final Optional<Song> existingSong = songDao.findById(id);
+
+      if (existingSong.isPresent()) {
+         songDao.deleteById(id);
+      }
+      else {
+         throw new ApiException("Song does not exist", ValidationError.NOT_FOUND, SONG);
+      }
+   }
+
 }
