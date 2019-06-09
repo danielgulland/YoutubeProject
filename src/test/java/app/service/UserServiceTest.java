@@ -1,5 +1,6 @@
 package app.service;
 
+import app.BaseTest;
 import app.dao.UserDao;
 import app.exception.ApiException;
 import app.model.User;
@@ -30,17 +31,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class UserServiceTest {
-
-   private static final int USER_ID = 1;
-   private static final int INVALID_ID = 0;
-   private static final String USERNAME = "testUser";
-   private static final String INVALID_USERNAME = " ";
-   private static final String EMAIL = "test@email.com";
-   private static final String PASSWORD = "password";
-   private static final String OLD_PASSWORD = "oldPassword";
-   private static final String DIFFERENT_EMAIL = "differentEmail@email.com";
-   private static final String DIFFERENT_USERNAME = "differentUsername";
+public class UserServiceTest extends BaseTest {
 
    @Mock
    private UserDao userDao;
@@ -54,13 +45,13 @@ public class UserServiceTest {
       when(userDao.findById(anyInt())).thenReturn(Optional.of(buildUser()));
 
       // Act
-      final User response = userService.getUserById(USER_ID);
+      final User response = userService.getUserById(VALID_ID);
 
       // Assert
       verify(userDao).findById(anyInt());
       verifyNoMoreInteractions(userDao);
 
-      Assert.assertEquals(USER_ID, response.getId().intValue());
+      Assert.assertEquals(VALID_ID, response.getId().intValue());
       Assert.assertEquals(USERNAME, response.getUsername());
       Assert.assertEquals(EMAIL, response.getEmail());
       Assert.assertEquals(PASSWORD, response.getPasswordHash());
@@ -73,7 +64,7 @@ public class UserServiceTest {
 
       try {
          // Act
-         userService.getUserById(USER_ID);
+         userService.getUserById(VALID_ID);
          fail("Exception not thrown");
       } catch (ApiException ex) {
          // Assert
@@ -226,15 +217,15 @@ public class UserServiceTest {
       final User user = buildUser();
       user.setPasswordHash(OLD_PASSWORD);
 
-      when(userDao.findById(USER_ID)).thenReturn(Optional.of(user));
+      when(userDao.findById(VALID_ID)).thenReturn(Optional.of(user));
       when(userDao.findByEmail(anyString())).thenReturn(Optional.empty());
 
       //Act
       final UpdateUserData updateUserData = buildUpdateUserData();
-      userService.updateUserById(USER_ID, updateUserData);
+      userService.updateUserById(VALID_ID, updateUserData);
 
       //Assert
-      verify(userDao).findById(USER_ID);
+      verify(userDao).findById(VALID_ID);
       verify(userDao).findByEmail(anyString());
       verify(userDao).save(any(User.class));
       verifyNoMoreInteractions(userDao);
@@ -250,7 +241,7 @@ public class UserServiceTest {
       //Arrange
       final User user = buildUser();
 
-      when(userDao.findById(USER_ID)).thenReturn(Optional.of(user));
+      when(userDao.findById(VALID_ID)).thenReturn(Optional.of(user));
       when(userDao.findByEmail(anyString())).thenReturn((Optional.empty()));
 
       //Act
@@ -258,10 +249,10 @@ public class UserServiceTest {
       updateUserData.setEmail(DIFFERENT_EMAIL);
       updateUserData.setPassword(null);
       updateUserData.setOldPassword(null);
-      userService.updateUserById(USER_ID, updateUserData);
+      userService.updateUserById(VALID_ID, updateUserData);
 
       //Assert
-      verify(userDao).findById(USER_ID);
+      verify(userDao).findById(VALID_ID);
       verify(userDao).findByEmail(anyString());
       verify(userDao).save(any(User.class));
       verifyNoMoreInteractions(userDao);
@@ -275,17 +266,17 @@ public class UserServiceTest {
       //Arrange
       final User user = buildUser();
 
-      when(userDao.findById(USER_ID)).thenReturn(Optional.of(user));
+      when(userDao.findById(VALID_ID)).thenReturn(Optional.of(user));
 
       //Act
       final UpdateUserData updateUserData = buildUpdateUserData();
       updateUserData.setOldPassword(PASSWORD);
       updateUserData.setPassword("newPassword");
       updateUserData.setEmail(null);
-      userService.updateUserById(USER_ID, updateUserData);
+      userService.updateUserById(VALID_ID, updateUserData);
 
       //Arrange
-      verify(userDao).findById(USER_ID);
+      verify(userDao).findById(VALID_ID);
       verify(userDao).save(any(User.class));
       verify(userDao, never()).findByEmail(anyString());
       verifyNoMoreInteractions(userDao);
@@ -299,17 +290,17 @@ public class UserServiceTest {
       //Arrange
       final User user = buildUser();
 
-      when(userDao.findById(USER_ID)).thenReturn(Optional.of(user));
+      when(userDao.findById(VALID_ID)).thenReturn(Optional.of(user));
 
       //Act
       final UpdateUserData updateUserData = buildUpdateUserData();
       updateUserData.setOldPassword(null);
       updateUserData.setPassword("newPassword");
       updateUserData.setEmail(null);
-      userService.updateUserById(USER_ID, updateUserData);
+      userService.updateUserById(VALID_ID, updateUserData);
 
       //Arrange
-      verify(userDao).findById(USER_ID);
+      verify(userDao).findById(VALID_ID);
       verify(userDao).save(any(User.class));
       verify(userDao, never()).findByEmail(anyString());
       verifyNoMoreInteractions(userDao);
@@ -321,16 +312,16 @@ public class UserServiceTest {
    @Test
    public void testUpdateUserById_InvalidId() {
       //Arrange
-      when(userDao.findById(USER_ID)).thenReturn(Optional.empty());
+      when(userDao.findById(VALID_ID)).thenReturn(Optional.empty());
 
       //Act
       try {
          final UpdateUserData updateUserData = buildUpdateUserData();
-         userService.updateUserById(USER_ID, updateUserData);
+         userService.updateUserById(VALID_ID, updateUserData);
          fail("exception not thrown");
       } catch (ApiException ex) {
          //Assert
-         verify(userDao).findById(USER_ID);
+         verify(userDao).findById(VALID_ID);
          verifyNoMoreInteractions(userDao);
 
          Assert.assertEquals("User does not exist", ex.getMessage());
@@ -346,16 +337,16 @@ public class UserServiceTest {
       final User user = buildUser();
       user.setPasswordHash(OLD_PASSWORD);
       final UpdateUserData updateUserData = buildUpdateUserData();
-      when(userDao.findById(USER_ID)).thenReturn(Optional.of(user));
+      when(userDao.findById(VALID_ID)).thenReturn(Optional.of(user));
       when(userDao.findByEmail(EMAIL)).thenReturn(Optional.of(user));
 
       // Act
       try {
-         userService.updateUserById(USER_ID, updateUserData);
+         userService.updateUserById(VALID_ID, updateUserData);
          fail("Exception not thrown");
       } catch (ApiException ex) {
          // Assert
-         verify(userDao).findById(USER_ID);
+         verify(userDao).findById(VALID_ID);
          verify(userDao).findByEmail(EMAIL);
          verify(userDao, times(0)).save(user);
          verifyNoMoreInteractions(userDao);
@@ -373,15 +364,15 @@ public class UserServiceTest {
       // Arrange
       final User user = buildUser();
       final UpdateUserData updateUserData = buildUpdateUserData();
-      when(userDao.findById(USER_ID)).thenReturn(Optional.of(user));
+      when(userDao.findById(VALID_ID)).thenReturn(Optional.of(user));
 
       // Act
       try {
-         userService.updateUserById(USER_ID, updateUserData);
+         userService.updateUserById(VALID_ID, updateUserData);
          fail("Exception not thrown");
       } catch (ApiException ex) {
          // Assert
-         verify(userDao).findById(USER_ID);
+         verify(userDao).findById(VALID_ID);
          verify(userDao, times(0)).findByEmail(EMAIL);
          verify(userDao, times(0)).save(user);
          verifyNoMoreInteractions(userDao);
@@ -414,14 +405,14 @@ public class UserServiceTest {
    public void testDeleteUserById_validID() {
       //Arrange
       final User user = buildUser();
-      when(userDao.findById(USER_ID)).thenReturn(Optional.of(user));
+      when(userDao.findById(VALID_ID)).thenReturn(Optional.of(user));
 
       //Act
-      userService.deleteUserById(USER_ID);
+      userService.deleteUserById(VALID_ID);
 
       //Assert
-      verify(userDao).findById(USER_ID);
-      verify(userDao).deleteById(USER_ID);
+      verify(userDao).findById(VALID_ID);
+      verify(userDao).deleteById(VALID_ID);
       verifyNoMoreInteractions(userDao);
    }
 
@@ -443,23 +434,5 @@ public class UserServiceTest {
          Assert.assertEquals("User does not exist", ex.getMessage());
          Assert.assertEquals(1, ex.getFields().size());
       }
-   }
-
-   private User buildUser() {
-      return User.builder()
-            .id(USER_ID)
-            .username(USERNAME)
-            .email(EMAIL)
-            .passwordHash(PASSWORD)
-            .build();
-   }
-
-   private UpdateUserData buildUpdateUserData() {
-      final UpdateUserData data = new UpdateUserData();
-      data.setEmail(EMAIL);
-      data.setPassword(PASSWORD);
-      data.setOldPassword(OLD_PASSWORD);
-
-      return data;
    }
 }

@@ -1,5 +1,6 @@
 package app.controller;
 
+import app.BaseTest;
 import app.model.User;
 import app.request.RegistrationData;
 import app.request.UpdateUserData;
@@ -29,16 +30,7 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class UserControllerTest {
-
-   private static final int ID = 1;
-   private static final int INVALID_ID = 0;
-   private static final String USERNAME = "test";
-   private static final String INVALID_USERNAME = " ";
-   private static final String EMAIL = "test@test.com";
-   private static final String INVALID_EMAIL = "bademail.com";
-   private static final String PASSWORD = "password";
-   private static final String OLD_PASSWORD = "oldPassword";
+public class UserControllerTest extends BaseTest {
 
    @Mock
    private UserService userService;
@@ -57,7 +49,7 @@ public class UserControllerTest {
       when(userService.getUserById(anyInt())).thenReturn(user);
 
       // Act
-      final ResponseEntity response = controller.getUserById(ID);
+      final ResponseEntity response = controller.getUserById(VALID_ID);
 
       // Assert
       verify(validator).check(anyBoolean(), any(ValidationError.class), anyString());
@@ -196,7 +188,7 @@ public class UserControllerTest {
       final UpdateUserData updateUserData = buildUpdateUserModel();
       updateUserData.setEmail(INVALID_EMAIL);
       updateUserData.setOldPassword(" ");
-      final ResponseEntity responseEntity = controller.updateUserById(ID, updateUserData);
+      final ResponseEntity responseEntity = controller.updateUserById(VALID_ID, updateUserData);
 
       //Act
       verify(validator).check(true, ValidationError.BAD_VALUE, "id");
@@ -220,13 +212,13 @@ public class UserControllerTest {
       //Act
       final UpdateUserData updateUserData = buildUpdateUserModel();
       updateUserData.setPassword(" ");
-      final ResponseEntity response = controller.updateUserById(ID, updateUserData);
+      final ResponseEntity response = controller.updateUserById(VALID_ID, updateUserData);
 
       //Assert
       verify(validator).check(true, ValidationError.BAD_VALUE, "id");
       verify(validator).chain(true, ValidationError.BAD_VALUE, "email");
       verify(validator).check(true, ValidationError.MISSING_FIELD, "oldPassword");
-      verify(userService).updateUserById(ID, updateUserData);
+      verify(userService).updateUserById(VALID_ID, updateUserData);
       verifyNoMoreInteractions(validator);
       verifyNoMoreInteractions(userService);
 
@@ -244,13 +236,13 @@ public class UserControllerTest {
       //Act
       final UpdateUserData updateUserData = buildUpdateUserModel();
       updateUserData.setEmail(" ");
-      final ResponseEntity responseEntity = controller.updateUserById(ID, updateUserData);
+      final ResponseEntity responseEntity = controller.updateUserById(VALID_ID, updateUserData);
 
       //Assert
       verify(validator).check(true, ValidationError.BAD_VALUE, "id");
       verify(validator).chain(true, ValidationError.BAD_VALUE, "email");
       verify(validator).check(true, ValidationError.MISSING_FIELD, "oldPassword");
-      verify(userService).updateUserById(ID, updateUserData);
+      verify(userService).updateUserById(VALID_ID, updateUserData);
       verifyNoMoreInteractions((validator));
       verifyNoMoreInteractions(userService);
 
@@ -299,11 +291,11 @@ public class UserControllerTest {
       when(validator.check(true, ValidationError.BAD_VALUE, "id")).thenReturn(true);
 
       //Act
-      final ResponseEntity responseEntity = controller.deleteUserById(ID);
+      final ResponseEntity responseEntity = controller.deleteUserById(VALID_ID);
 
       //Assert
       verify(validator).check(true, ValidationError.BAD_VALUE, "id");
-      verify(userService).deleteUserById(ID);
+      verify(userService).deleteUserById(VALID_ID);
       verifyNoMoreInteractions(validator);
       verifyNoMoreInteractions(userService);
 
@@ -330,34 +322,5 @@ public class UserControllerTest {
       Assert.assertNull(responseEntity.getBody());
    }
 
-   private RegistrationData buildRegistrationData() {
-      final RegistrationData data = new RegistrationData();
-      data.setUsername(USERNAME);
-      data.setEmail(EMAIL);
-      data.setPassword(PASSWORD);
 
-      return data;
-   }
-
-   private UpdateUserData buildUpdateUserModel() {
-      final UpdateUserData data = new UpdateUserData();
-      data.setEmail(EMAIL);
-      data.setPassword(PASSWORD);
-      data.setOldPassword(OLD_PASSWORD);
-
-      return data;
-   }
-
-   private ResponseEntity buildResponseEntity(final HttpStatus status) {
-      return ResponseEntity.status(status).build();
-   }
-
-   private User buildUser() {
-      return User.builder()
-            .id(ID)
-            .username(USERNAME)
-            .email(EMAIL)
-            .passwordHash(PASSWORD)
-            .build();
-   }
 }
