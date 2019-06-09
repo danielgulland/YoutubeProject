@@ -7,11 +7,14 @@ import app.model.PasswordReset;
 import app.model.User;
 import app.request.PasswordResetData;
 import app.util.EmailUtils;
+import app.util.HtmlUtils;
 import app.validation.ValidationError;
 import lombok.NonNull;
 
 import java.io.UnsupportedEncodingException;
 import java.time.ZonedDateTime;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -37,6 +40,7 @@ public class PasswordResetService {
 
    // Time in minutes before password reset token expires
    private static final long EXPIRES_IN = 30;
+   private static final String HTML_TEMPLATE = "passwordreset";
    private static final String EMAIL_SUBJECT = "Reset Your Password";
    private static final String RESET_LINK_FORMAT = "http://localhost:8000/api/resetpassword?userId=%d&token=%s";
 
@@ -108,10 +112,10 @@ public class PasswordResetService {
    private String generateContent(final User user, final String token) {
       final String resetUrl = String.format(RESET_LINK_FORMAT, user.getId(), token);
 
-      return String.format("<h4>Hey %s!<h4>", user.getUsername())
-            + "<p>You are receiving this email because you requested to reset your password. "
-            + "If you did not make this request, you can safely ignore this email.</p>"
-            + "<p>Please follow the link below to reset your password:</p>"
-            + String.format("<a href=\"%s\">%s</a>", resetUrl, resetUrl);
+      final Map<String, Object> variables = new HashMap<>();
+      variables.put("username", user.getUsername());
+      variables.put("resetUrl", resetUrl);
+
+      return HtmlUtils.generateHtmlContent(HTML_TEMPLATE, variables);
    }
 }
