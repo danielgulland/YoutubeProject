@@ -1,5 +1,6 @@
 package app.controller;
 
+import app.BaseTest;
 import app.model.Song;
 import app.request.CreateSongData;
 import app.service.SongService;
@@ -27,14 +28,7 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class SongControllerTest {
-
-   private static final int VALID_ID = 1;
-   private static final int INVALID_ID = 0;
-   private static final String ID = "id";
-   private static final String TITLE = "title";
-   private static final String INVALID_TITLE = " ";
-   private static final String REFERENCE = "reference";
+public class SongControllerTest extends BaseTest {
 
    @Mock
    private SongService songService;
@@ -50,14 +44,14 @@ public class SongControllerTest {
 
       // Arrange
       final Song song = buildSong();
-      when(validator.check(true, ValidationError.BAD_VALUE, ID)).thenReturn(true);
+      when(validator.check(true, ValidationError.BAD_VALUE, "id")).thenReturn(true);
       when(songService.getSongById(VALID_ID)).thenReturn(song);
 
       // Act
       final ResponseEntity response = controller.getSongById(VALID_ID);
 
       // Assert
-      verify(validator).check(true, ValidationError.BAD_VALUE, ID);
+      verify(validator).check(true, ValidationError.BAD_VALUE, "id");
       verify(songService).getSongById(VALID_ID);
 
       Assert.assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -68,14 +62,14 @@ public class SongControllerTest {
    public void testGetSongById_InvalidId() {
 
       // Arrange
-      when(validator.check(false, ValidationError.BAD_VALUE, ID)).thenReturn(false);
+      when(validator.check(false, ValidationError.BAD_VALUE, "id")).thenReturn(false);
       when(validator.getResponseEntity()).thenReturn(buildResponseEntity(HttpStatus.BAD_REQUEST));
 
       // Act
       final ResponseEntity response = controller.getSongById(INVALID_ID);
 
       // Assert
-      verify(validator).check(false, ValidationError.BAD_VALUE, ID);
+      verify(validator).check(false, ValidationError.BAD_VALUE, "id");
       verifyZeroInteractions(songService);
 
       Assert.assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
@@ -197,24 +191,5 @@ public class SongControllerTest {
 
       Assert.assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
       Assert.assertNull(response.getBody());
-   }
-
-   private CreateSongData buildCreateSongModel() {
-      final CreateSongData data = new CreateSongData();
-      data.setTitle(TITLE);
-      data.setReference(REFERENCE);
-
-      return data;
-   }
-
-   private Song buildSong() {
-      return Song.builder()
-            .reference(REFERENCE)
-            .title(TITLE)
-            .build();
-   }
-
-   private ResponseEntity buildResponseEntity(final HttpStatus status) {
-      return ResponseEntity.status(status).build();
    }
 }

@@ -1,5 +1,6 @@
 package app.service;
 
+import app.BaseTest;
 import app.dao.SongDao;
 import app.exception.ApiException;
 import app.model.Song;
@@ -26,13 +27,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class SongServiceTest {
-
-   private static final int VALID_ID = 1;
-   private static final int INVALID_ID = 1;
-   private static final String SONG = "song";
-   private static final String TITLE = "title";
-   private static final String REFERENCE = "reference";
+public class SongServiceTest extends BaseTest {
 
    @Mock
    private SongDao songDao;
@@ -183,12 +178,4 @@ public class SongServiceTest {
 
       Assert.assertFalse(songs.isEmpty());
    }
-
-   private Song buildSong() {
-      return Song.builder()
-            .reference(REFERENCE)
-            .title(TITLE)
-            .build();
-   }
-
 }

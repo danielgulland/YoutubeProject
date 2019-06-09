@@ -1,20 +1,13 @@
 package app.exception;
 
-import app.validation.ValidationError;
+import app.BaseTest;
 
 import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.google.common.collect.ImmutableList;
-
-public class ApiExceptionTest {
-
-   private static final String MESSAGE = "test api exception";
-   private static final ValidationError ERROR = ValidationError.NOT_FOUND;
-   private static final String FIELD = "test field";
-   private static final List<String> FIELDS = ImmutableList.of(FIELD);
+public class ApiExceptionTest extends BaseTest {
 
    @Test
    public void testApiException_MessageAndError() {

@@ -1,11 +1,11 @@
 package app.service;
 
+import app.BaseTest;
 import app.dao.PasswordResetDao;
 import app.dao.UserDao;
 import app.exception.ApiException;
 import app.model.PasswordReset;
 import app.model.User;
-import app.request.PasswordResetData;
 import app.util.EmailUtils;
 import app.validation.ValidationError;
 
@@ -34,14 +34,7 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class PasswordResetServiceTest {
-
-   private static final int USER_ID = 1;
-   private static final String USERNAME = "testUser";
-   private static final String EMAIL = "test@test.com";
-   private static final String PASSWORD = "password";
-   private static final String NEW_PASSWORD = "newpassword";
-   private static final String TOKEN = "token";
+public class PasswordResetServiceTest extends BaseTest {
 
    @Mock
    private PasswordResetDao passwordResetDao;
@@ -124,13 +117,13 @@ public class PasswordResetServiceTest {
    public void testVerifyToken_successful() {
       // Arrange
       final PasswordReset passwordReset = buildPasswordReset();
-      when(passwordResetDao.findByUserId(USER_ID)).thenReturn(Optional.of(passwordReset));
+      when(passwordResetDao.findByUserId(VALID_ID)).thenReturn(Optional.of(passwordReset));
 
       // Act
-      final PasswordReset response = passwordResetService.verifyToken(USER_ID, TOKEN);
+      final PasswordReset response = passwordResetService.verifyToken(VALID_ID, TOKEN);
 
       // Assert
-      verify(passwordResetDao).findByUserId(USER_ID);
+      verify(passwordResetDao).findByUserId(VALID_ID);
       verifyNoMoreInteractions(passwordResetDao);
       verifyZeroInteractions(userDao);
 
@@ -141,15 +134,15 @@ public class PasswordResetServiceTest {
    public void testVerifyToken_tokenMismatch() {
       // Arrange
       final PasswordReset passwordReset = buildPasswordReset();
-      when(passwordResetDao.findByUserId(USER_ID)).thenReturn(Optional.of(passwordReset));
+      when(passwordResetDao.findByUserId(VALID_ID)).thenReturn(Optional.of(passwordReset));
 
       // Act
       try {
-         passwordResetService.verifyToken(USER_ID, TOKEN + "wrong");
+         passwordResetService.verifyToken(VALID_ID, TOKEN + "wrong");
          fail("Exception not thrown");
       } catch (ApiException ex) {
          // Assert
-         verify(passwordResetDao).findByUserId(USER_ID);
+         verify(passwordResetDao).findByUserId(VALID_ID);
          verifyNoMoreInteractions(passwordResetDao);
          verifyZeroInteractions(userDao);
 
@@ -164,15 +157,15 @@ public class PasswordResetServiceTest {
       // Arrange
       final PasswordReset passwordReset = buildPasswordReset();
       passwordReset.setExpires(ZonedDateTime.now().minusMinutes(30));
-      when(passwordResetDao.findByUserId(USER_ID)).thenReturn(Optional.of(passwordReset));
+      when(passwordResetDao.findByUserId(VALID_ID)).thenReturn(Optional.of(passwordReset));
 
       // Act
       try {
-         passwordResetService.verifyToken(USER_ID, TOKEN);
+         passwordResetService.verifyToken(VALID_ID, TOKEN);
          fail("Exception not thrown");
       } catch (ApiException ex) {
          // Assert
-         verify(passwordResetDao).findByUserId(USER_ID);
+         verify(passwordResetDao).findByUserId(VALID_ID);
          verifyNoMoreInteractions(passwordResetDao);
          verifyZeroInteractions(userDao);
 
@@ -185,15 +178,15 @@ public class PasswordResetServiceTest {
    @Test
    public void testVerifyToken_noPasswordReset() {
       // Arrange
-      when(passwordResetDao.findByUserId(USER_ID)).thenReturn(Optional.empty());
+      when(passwordResetDao.findByUserId(VALID_ID)).thenReturn(Optional.empty());
 
       // Act
       try {
-         passwordResetService.verifyToken(USER_ID, TOKEN);
+         passwordResetService.verifyToken(VALID_ID, TOKEN);
          fail("Exception not thrown");
       } catch (ApiException ex) {
          // Assert
-         verify(passwordResetDao).findByUserId(USER_ID);
+         verify(passwordResetDao).findByUserId(VALID_ID);
          verifyNoMoreInteractions(passwordResetDao);
          verifyZeroInteractions(userDao);
 
@@ -207,13 +200,13 @@ public class PasswordResetServiceTest {
    public void testResetPassword_successful() {
       // Arrange
       final PasswordReset passwordReset = buildPasswordReset();
-      when(passwordResetDao.findByUserId(USER_ID)).thenReturn(Optional.of(passwordReset));
+      when(passwordResetDao.findByUserId(VALID_ID)).thenReturn(Optional.of(passwordReset));
 
       // Act
       passwordResetService.resetPassword(buildPasswordResetData());
 
       // Assert
-      verify(passwordResetDao).findByUserId(USER_ID);
+      verify(passwordResetDao).findByUserId(VALID_ID);
       verify(userDao).save(userArgumentCaptor.capture());
       verify(passwordResetDao).delete(passwordReset);
       verifyNoMoreInteractions(userDao);
@@ -229,37 +222,11 @@ public class PasswordResetServiceTest {
 
    @Test(expected = NullPointerException.class)
    public void testVerifyToken_tokenNonNull() {
-      passwordResetService.verifyToken(USER_ID, null);
+      passwordResetService.verifyToken(VALID_ID, null);
    }
 
    @Test(expected = NullPointerException.class)
    public void testResetPassword_passwordResetDataNonNull() {
       passwordResetService.resetPassword(null);
-   }
-
-   private User buildUser() {
-      return User.builder()
-            .id(USER_ID)
-            .username(USERNAME)
-            .email(EMAIL)
-            .passwordHash(PASSWORD)
-            .build();
-   }
-
-   private PasswordReset buildPasswordReset() {
-      return PasswordReset.builder()
-            .userId(USER_ID)
-            .token(TOKEN)
-            .expires(ZonedDateTime.now().plusMinutes(30))
-            .user(buildUser())
-            .build();
-   }
-
-   private PasswordResetData buildPasswordResetData() {
-      final PasswordResetData passwordResetData = new PasswordResetData();
-      passwordResetData.setUserId(USER_ID);
-      passwordResetData.setToken(TOKEN);
-      passwordResetData.setPassword(NEW_PASSWORD);
-      return passwordResetData;
    }
 }

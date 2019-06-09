@@ -1,5 +1,7 @@
 package app.validation;
 
+import app.BaseTest;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,12 +14,7 @@ import org.springframework.http.ResponseEntity;
 
 import com.google.common.collect.ImmutableMap;
 
-public class ValidatorTest {
-
-   private static final ValidationError ERROR = ValidationError.BAD_VALUE;
-   private static final ValidationError ERROR2 = ValidationError.DUPLICATE_VALUE;
-   private static final String FIELD = "test";
-   private static final String FIELD2 = "test2";
+public class ValidatorTest extends BaseTest {
 
    private Validator validator;
 

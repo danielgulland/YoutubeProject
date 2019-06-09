@@ -1,5 +1,6 @@
 package app.exception;
 
+import app.BaseTest;
 import app.validation.ValidationError;
 import app.validation.Validator;
 
@@ -21,9 +22,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class ApiExceptionHandlerTest {
-
-   private static final String MESSAGE = "test";
+public class ApiExceptionHandlerTest extends BaseTest {
 
    @Mock
    private Validator validator;
@@ -85,9 +84,5 @@ public class ApiExceptionHandlerTest {
 
       Assert.assertEquals(error.getStatus(), response.getStatusCode());
       Assert.assertEquals(error.getTag(), response.getBody());
-   }
-
-   private ResponseEntity buildResponseEntity(final ValidationError error) {
-      return ResponseEntity.status(error.getStatus()).body(error.getTag());
    }
 }

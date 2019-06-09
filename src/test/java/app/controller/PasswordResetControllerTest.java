@@ -1,12 +1,11 @@
 package app.controller;
 
+import app.BaseTest;
 import app.model.PasswordReset;
 import app.request.PasswordResetData;
 import app.service.PasswordResetService;
 import app.validation.ValidationError;
 import app.validation.Validator;
-
-import java.time.ZonedDateTime;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -29,15 +28,7 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class PasswordResetControllerTest {
-
-   private static final String EMAIL = "test@test.com";
-   private static final String BAD_EMAIL = "bademail.com";
-   private static final int USER_ID = 1;
-   private static final int BAD_ID = 0;
-   private static final String TOKEN = "token";
-   private static final String BAD_TOKEN = "";
-   private static final String PASSWORD = "password";
+public class PasswordResetControllerTest extends BaseTest {
 
    @Mock
    private PasswordResetService passwordResetService;
@@ -95,7 +86,7 @@ public class PasswordResetControllerTest {
       when(validator.getResponseEntity()).thenReturn(ResponseEntity.status(HttpStatus.BAD_REQUEST).build());
 
       // Act
-      final ResponseEntity response = passwordResetController.forgotPassword(ImmutableMap.of("email", BAD_EMAIL));
+      final ResponseEntity response = passwordResetController.forgotPassword(ImmutableMap.of("email", INVALID_EMAIL));
 
       // Assert
       verify(validator).check(true, ValidationError.MISSING_FIELD, "email");
@@ -113,16 +104,16 @@ public class PasswordResetControllerTest {
       final PasswordReset passwordReset = buildPasswordReset();
       when(validator.chain(true, ValidationError.BAD_VALUE, "id")).thenReturn(validator);
       when(validator.check(true, ValidationError.BAD_VALUE, "token")).thenReturn(true);
-      when(passwordResetService.verifyToken(USER_ID, TOKEN)).thenReturn(passwordReset);
+      when(passwordResetService.verifyToken(VALID_ID, TOKEN)).thenReturn(passwordReset);
 
       // Act
-      final ResponseEntity response = passwordResetController.verifyToken(USER_ID, TOKEN);
+      final ResponseEntity response = passwordResetController.verifyToken(VALID_ID, TOKEN);
 
       // Assert
       verify(validator).chain(true, ValidationError.BAD_VALUE, "id");
       verify(validator).check(true, ValidationError.BAD_VALUE, "token");
       verifyNoMoreInteractions(validator);
-      verify(passwordResetService).verifyToken(USER_ID, TOKEN);
+      verify(passwordResetService).verifyToken(VALID_ID, TOKEN);
       verifyNoMoreInteractions(passwordResetService);
 
       Assert.assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -137,7 +128,7 @@ public class PasswordResetControllerTest {
       when(validator.getResponseEntity()).thenReturn(ResponseEntity.status(HttpStatus.BAD_REQUEST).build());
 
       // Act
-      final ResponseEntity response = passwordResetController.verifyToken(BAD_ID, BAD_TOKEN);
+      final ResponseEntity response = passwordResetController.verifyToken(INVALID_ID, INVALID_TOKEN);
 
       // Assert
       verify(validator).chain(false, ValidationError.BAD_VALUE, "id");
@@ -191,21 +182,5 @@ public class PasswordResetControllerTest {
       verifyZeroInteractions(passwordResetService);
 
       Assert.assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-   }
-
-   private PasswordReset buildPasswordReset() {
-      final PasswordReset passwordReset = new PasswordReset();
-      passwordReset.setUserId(USER_ID);
-      passwordReset.setToken(TOKEN);
-      passwordReset.setExpires(ZonedDateTime.now().plusMinutes(30));
-      return passwordReset;
-   }
-
-   private PasswordResetData buildPasswordResetData() {
-      final PasswordResetData passwordResetData = new PasswordResetData();
-      passwordResetData.setUserId(USER_ID);
-      passwordResetData.setToken(TOKEN);
-      passwordResetData.setPassword(PASSWORD);
-      return passwordResetData;
    }
 }
