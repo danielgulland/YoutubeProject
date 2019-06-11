@@ -19,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -79,6 +80,47 @@ public class PlaylistControllerTest {
 
       Assert.assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
       Assert.assertNull(response.getBody());
+   }
+
+   @Test
+   public void testGetPlaylistById_successful() {
+
+      //Arrange
+      final Playlist playlist = buildPlaylist();
+      when(validator.check(true, ValidationError.BAD_VALUE, ID)).thenReturn(true);
+      when(playlistService.getPlaylistById(VALID_ID)).thenReturn(playlist);
+
+      //Act
+      final ResponseEntity responseEntity = playlistController.getPlaylistById(VALID_ID);
+
+      //Assert
+      verify(validator).check(true, ValidationError.BAD_VALUE, ID);
+      verify(playlistService).getPlaylistById(VALID_ID);
+      verifyNoMoreInteractions(playlistService);
+      verifyNoMoreInteractions(validator);
+
+      Assert.assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+      Assert.assertEquals(playlist, responseEntity.getBody());
+   }
+
+   @Test
+   public void testGetPlaylistById_unsuccessful() {
+
+      //Arrange
+      when(validator.check(false, ValidationError.BAD_VALUE, ID)).thenReturn(false);
+      when(validator.getResponseEntity()).thenReturn(buildResponseEntity(HttpStatus.BAD_REQUEST));
+
+      //Act
+      final ResponseEntity responseEntity = playlistController.getPlaylistById(INVALID_ID);
+
+      //Assert
+      verify(validator).check(false, ValidationError.BAD_VALUE, ID);
+      verify(validator).getResponseEntity();
+      verifyNoMoreInteractions(validator);
+      verifyZeroInteractions(playlistService);
+
+      Assert.assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
+      Assert.assertNull(responseEntity.getBody());
    }
 
    private CreatePlaylistData buildCreatePlaylistData() {
