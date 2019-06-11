@@ -32,7 +32,7 @@ public class PlaylistService {
    /**
     * Service call to get a playlist by id.
     *
-    * @param id playlist id to check for
+    * @param id playlist's id
     * @return Playlist found by the playlist's id
     * @throws ApiException if no playlist exists for the playlist's id
     */
