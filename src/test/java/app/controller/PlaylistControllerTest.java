@@ -7,6 +7,8 @@ import app.service.PlaylistService;
 import app.validation.ValidationError;
 import app.validation.Validator;
 
+import java.time.ZonedDateTime;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -77,5 +79,69 @@ public class PlaylistControllerTest extends BaseTest {
 
       Assert.assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
       Assert.assertNull(response.getBody());
+   }
+
+   @Test
+   public void testGetPlaylistById_successful() {
+
+      //Arrange
+      final Playlist playlist = buildPlaylist();
+      when(validator.check(true, ValidationError.BAD_VALUE, ID_FIELD)).thenReturn(true);
+      when(playlistService.getPlaylistById(VALID_ID)).thenReturn(playlist);
+
+      //Act
+      final ResponseEntity responseEntity = playlistController.getPlaylistById(VALID_ID);
+
+      //Assert
+      verify(validator).check(true, ValidationError.BAD_VALUE, ID_FIELD);
+      verify(playlistService).getPlaylistById(VALID_ID);
+      verifyNoMoreInteractions(playlistService);
+      verifyNoMoreInteractions(validator);
+
+      Assert.assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+      Assert.assertEquals(playlist, responseEntity.getBody());
+   }
+
+   @Test
+   public void testGetPlaylistById_unsuccessful() {
+
+      //Arrange
+      when(validator.check(false, ValidationError.BAD_VALUE, ID_FIELD)).thenReturn(false);
+      when(validator.getResponseEntity()).thenReturn(buildResponseEntity(HttpStatus.BAD_REQUEST));
+
+      //Act
+      final ResponseEntity responseEntity = playlistController.getPlaylistById(INVALID_ID);
+
+      //Assert
+      verify(validator).check(false, ValidationError.BAD_VALUE, ID_FIELD);
+      verify(validator).getResponseEntity();
+      verifyNoMoreInteractions(validator);
+      verifyZeroInteractions(playlistService);
+
+      Assert.assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
+      Assert.assertNull(responseEntity.getBody());
+   }
+
+   private CreatePlaylistData buildCreatePlaylistData() {
+      final CreatePlaylistData data = new CreatePlaylistData();
+      data.setName(NAME);
+      data.setGenre(GENRE);
+      data.setUserId(VALID_ID);
+
+      return data;
+   }
+
+   private Playlist buildPlaylist() {
+      return Playlist.builder()
+            .name(NAME)
+            .userId(VALID_ID)
+            .isPrivate(false)
+            .genre(GENRE)
+            .dateCreated(ZonedDateTime.now())
+            .build();
+   }
+
+   private ResponseEntity buildResponseEntity(final HttpStatus status) {
+      return ResponseEntity.status(status).build();
    }
 }
