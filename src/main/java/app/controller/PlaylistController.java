@@ -12,6 +12,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -45,6 +47,21 @@ public class PlaylistController {
          playlistService.createNewPlaylist(buildFromCreatePlaylistData(createPlaylistData));
 
          return ResponseEntity.status(HttpStatus.OK).body(null);
+      }
+
+      return validator.getResponseEntity();
+   }
+
+   /**
+    * Get a playlist by the playlist's id.
+    *
+    * @param id playlist's id
+    * @return Response with status 200 and playlist in body for successful call, otherwise validation response
+    */
+   @GetMapping("/{id}")
+   public ResponseEntity getPlaylistById(@PathVariable final int id) {
+      if (validator.check(id > 0, ValidationError.BAD_VALUE, ID)) {
+         return ResponseEntity.status(HttpStatus.OK).body(playlistService.getPlaylistById(id));
       }
 
       return validator.getResponseEntity();

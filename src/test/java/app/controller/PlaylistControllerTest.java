@@ -78,4 +78,45 @@ public class PlaylistControllerTest extends BaseTest {
       Assert.assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
       Assert.assertNull(response.getBody());
    }
+
+   @Test
+   public void testGetPlaylistById_successful() {
+
+      //Arrange
+      final Playlist playlist = buildPlaylist();
+      when(validator.check(true, ValidationError.BAD_VALUE, ID_FIELD)).thenReturn(true);
+      when(playlistService.getPlaylistById(VALID_ID)).thenReturn(playlist);
+
+      //Act
+      final ResponseEntity responseEntity = playlistController.getPlaylistById(VALID_ID);
+
+      //Assert
+      verify(validator).check(true, ValidationError.BAD_VALUE, ID_FIELD);
+      verify(playlistService).getPlaylistById(VALID_ID);
+      verifyNoMoreInteractions(playlistService);
+      verifyNoMoreInteractions(validator);
+
+      Assert.assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+      Assert.assertEquals(playlist, responseEntity.getBody());
+   }
+
+   @Test
+   public void testGetPlaylistById_unsuccessful() {
+
+      //Arrange
+      when(validator.check(false, ValidationError.BAD_VALUE, ID_FIELD)).thenReturn(false);
+      when(validator.getResponseEntity()).thenReturn(buildResponseEntity(HttpStatus.BAD_REQUEST));
+
+      //Act
+      final ResponseEntity responseEntity = playlistController.getPlaylistById(INVALID_ID);
+
+      //Assert
+      verify(validator).check(false, ValidationError.BAD_VALUE, ID_FIELD);
+      verify(validator).getResponseEntity();
+      verifyNoMoreInteractions(validator);
+      verifyZeroInteractions(playlistService);
+
+      Assert.assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
+      Assert.assertNull(responseEntity.getBody());
+   }
 }
