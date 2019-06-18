@@ -6,7 +6,6 @@ import app.exception.ApiException;
 import app.model.Playlist;
 import app.validation.ValidationError;
 
-import java.time.ZonedDateTime;
 import java.util.Optional;
 
 import org.junit.Assert;
@@ -79,15 +78,5 @@ public class PlaylistServiceTest extends BaseTest {
          Assert.assertEquals(ValidationError.NOT_FOUND, ex.getError());
          Assert.assertTrue(ex.getFields().contains("playlist"));
       }
-   }
-
-   private Playlist buildPlaylist() {
-      return Playlist.builder()
-            .name(NAME)
-            .userId(VALID_ID)
-            .isPrivate(false)
-            .genre(GENRE)
-            .dateCreated(ZonedDateTime.now())
-            .build();
    }
 }

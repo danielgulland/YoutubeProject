@@ -7,8 +7,6 @@ import app.service.PlaylistService;
 import app.validation.ValidationError;
 import app.validation.Validator;
 
-import java.time.ZonedDateTime;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -120,28 +118,5 @@ public class PlaylistControllerTest extends BaseTest {
 
       Assert.assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
       Assert.assertNull(responseEntity.getBody());
-   }
-
-   private CreatePlaylistData buildCreatePlaylistData() {
-      final CreatePlaylistData data = new CreatePlaylistData();
-      data.setName(NAME);
-      data.setGenre(GENRE);
-      data.setUserId(VALID_ID);
-
-      return data;
-   }
-
-   private Playlist buildPlaylist() {
-      return Playlist.builder()
-            .name(NAME)
-            .userId(VALID_ID)
-            .isPrivate(false)
-            .genre(GENRE)
-            .dateCreated(ZonedDateTime.now())
-            .build();
-   }
-
-   private ResponseEntity buildResponseEntity(final HttpStatus status) {
-      return ResponseEntity.status(status).build();
    }
 }
