@@ -8,6 +8,7 @@ import app.request.CreatePlaylistData;
 import app.request.CreateSongData;
 import app.request.PasswordResetData;
 import app.request.RegistrationData;
+import app.request.UpdatePlaylistData;
 import app.request.UpdateUserData;
 import app.validation.ValidationError;
 
@@ -43,9 +44,12 @@ public class BaseTest {
    protected static final String REFERENCE = "reference";
 
    // Playlist
+   protected static final String PLAYLIST = "playlist";
    protected static final String ID_FIELD = "id";
    protected static final String GENRE = "genre";
    protected static final String NAME = "name";
+   protected static final String NEW_GENRE = "newGenre";
+   protected static final String NEW_NAME = "newName";
 
    // PasswordReset
    protected static final String TOKEN = "token";
@@ -127,6 +131,16 @@ public class BaseTest {
       data.setName(NAME);
       data.setGenre(GENRE);
       data.setUserId(VALID_ID);
+      data.setPrivate(false);
+
+      return data;
+   }
+
+   protected UpdatePlaylistData buildUpdatePlaylistData() {
+      final UpdatePlaylistData data = new UpdatePlaylistData();
+      data.setName(NAME);
+      data.setGenre(GENRE);
+      data.setPrivate(false);
 
       return data;
    }

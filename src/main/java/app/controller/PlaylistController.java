@@ -2,6 +2,7 @@ package app.controller;
 
 import app.model.Playlist;
 import app.request.CreatePlaylistData;
+import app.request.UpdatePlaylistData;
 import app.service.PlaylistService;
 import app.validation.ValidationError;
 import app.validation.Validator;
@@ -15,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -62,6 +64,24 @@ public class PlaylistController {
    public ResponseEntity getPlaylistById(@PathVariable final int id) {
       if (validator.check(id > 0, ValidationError.BAD_VALUE, ID)) {
          return ResponseEntity.status(HttpStatus.OK).body(playlistService.getPlaylistById(id));
+      }
+
+      return validator.getResponseEntity();
+   }
+
+   /**
+    * Updates an existing playlist given the information.
+    *
+    * @param id playlist id
+    * @param updatePlaylistData contains information to update a playlist
+    * @return Response with status 200 and null in the body for successful call, otherwise validation response
+    */
+   @PutMapping("/{id}")
+   public ResponseEntity updatePlaylistById(@PathVariable final int id,
+                                        @RequestBody final UpdatePlaylistData updatePlaylistData) {
+      if (validator.check(id > 0, ValidationError.BAD_VALUE, ID)) {
+         playlistService.updatePlaylistById(id, updatePlaylistData);
+         return ResponseEntity.status(HttpStatus.OK).body(null);
       }
 
       return validator.getResponseEntity();
