@@ -59,18 +59,20 @@ public class PlaylistService {
          throw new ApiException("Playlist does not exist", ValidationError.NOT_FOUND, PLAYLIST);
       }
 
+      final Playlist playlist = existingPlaylist.get();
+
       if (StringUtils.isNotBlank(updatePlaylistData.getName())) {
-         existingPlaylist.get().setName(updatePlaylistData.getName());
+         playlist.setName(updatePlaylistData.getName());
       }
 
       if (StringUtils.isNotBlank(updatePlaylistData.getGenre())) {
-         existingPlaylist.get().setGenre(updatePlaylistData.getGenre());
+         playlist.setGenre(updatePlaylistData.getGenre());
       }
 
-      if (updatePlaylistData.isPrivate() != existingPlaylist.get().isPrivate()) {
-         existingPlaylist.get().setPrivate(!existingPlaylist.get().isPrivate());
+      if (updatePlaylistData.getIsPrivate() != null) {
+         playlist.setPrivate(updatePlaylistData.getIsPrivate());
       }
 
-      playlistDao.save(existingPlaylist.get());
+      playlistDao.save(playlist);
    }
 }

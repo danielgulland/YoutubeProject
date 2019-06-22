@@ -140,7 +140,7 @@ public class BaseTest {
       final UpdatePlaylistData data = new UpdatePlaylistData();
       data.setName(NAME);
       data.setGenre(GENRE);
-      data.setPrivate(false);
+      data.setIsPrivate(false);
 
       return data;
    }

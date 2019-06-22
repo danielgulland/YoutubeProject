@@ -155,7 +155,7 @@ public class PlaylistServiceTest extends BaseTest {
 
       // Act
       final UpdatePlaylistData updatePlaylistData = new UpdatePlaylistData();
-      updatePlaylistData.setPrivate(true);
+      updatePlaylistData.setIsPrivate(true);
       playlistService.updatePlaylistById(VALID_ID, updatePlaylistData);
 
       // Assert

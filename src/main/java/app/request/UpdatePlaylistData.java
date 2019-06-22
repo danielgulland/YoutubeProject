@@ -8,6 +8,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class UpdatePlaylistData {
    private String name;
    @JsonProperty
-   private boolean isPrivate;
+   /* We're using a wrapper because if isPrivate isn't specified, it defaults to false. We can just have it set
+       to null with a wrapper. */
+   private Boolean isPrivate;
    private String genre;
 }
