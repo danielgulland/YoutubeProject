@@ -46,6 +46,7 @@ public class UserService {
     * Service call to update user by id.
     *
     * @param id user id to check for
+    * @param updateUserData contains information to update a user
     * @throws ApiException if no User exists for given id, if old password isn't correct, if email already exists
     */
    public void updateUserById(final int id, final UpdateUserData updateUserData) throws ApiException {

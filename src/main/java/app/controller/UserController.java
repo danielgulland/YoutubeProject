@@ -78,6 +78,7 @@ public class UserController {
     * Update an existing user given the information.
     *
     * @param id user id
+    * @param updateUserData contains information to update a user
     * @return Response with status 200 and null in the body for successful call, otherwise validation response
     */
    @PutMapping("/{id}")

@@ -20,6 +20,7 @@ public final class FieldConstants {
    public static final String TOKEN = "token";
 
    /* Playlist */
+   public static final String PLAYLIST = "playlist";
    public static final String NAME = "name";
    public static final String GENRE = "genre";
 
