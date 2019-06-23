@@ -51,31 +51,24 @@ public class PlaylistService {
     * @throws ApiException if no song exists for the song's id
     */
    public void addSongToPlaylist(final int songId, final int playlistId) {
-      final PlaylistSong playlistSong = new PlaylistSong();
       final Optional<Song> song = songDao.findById(songId);
       final Optional<Playlist> playlist = playlistDao.findById(playlistId);
 
-      if (playlist.isPresent()) {
-         playlistSong.setPlaylistId(playlistId);
-      }
-      else {
+      if (!playlist.isPresent()) {
          throw new ApiException("Playlist not found", ValidationError.NOT_FOUND, PLAYLIST_ID);
       }
 
-      if (song.isPresent()) {
-         playlistSong.setSongId(songId);
-      }
-      else {
+      if (!song.isPresent()) {
          throw new ApiException("Song not found", ValidationError.NOT_FOUND, SONG_ID);
       }
 
-      playlistSongDao.save(playlistSong);
+      playlistSongDao.save(PlaylistSong.builder().songId(songId).playlistId(playlistId).build());
    }
 
    /**
     * Service call to get a playlist by id.
     *
-    * @param id playlist's id
+    * @param id playlist id to check for
     * @return Playlist found by the playlist's id
     * @throws ApiException if no playlist exists for the playlist's id
     */
