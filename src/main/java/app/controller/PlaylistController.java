@@ -24,6 +24,8 @@ import org.springframework.web.bind.annotation.RestController;
 import static app.constant.FieldConstants.GENRE;
 import static app.constant.FieldConstants.ID;
 import static app.constant.FieldConstants.NAME;
+import static app.constant.FieldConstants.PLAYLIST_ID;
+import static app.constant.FieldConstants.SONG_ID;
 
 @RestController
 @RequestMapping(path = "/playlists")
@@ -47,6 +49,25 @@ public class PlaylistController {
             .chain(StringUtils.isNotBlank(createPlaylistData.getName()), ValidationError.MISSING_FIELD, NAME)
             .check(StringUtils.isNotBlank(createPlaylistData.getGenre()), ValidationError.MISSING_FIELD, GENRE)) {
          playlistService.createNewPlaylist(buildFromCreatePlaylistData(createPlaylistData));
+
+         return ResponseEntity.status(HttpStatus.OK).body(null);
+      }
+
+      return validator.getResponseEntity();
+   }
+
+   /**
+    * Add an existing song to an existing playlist.
+    *
+    * @param songId song's id
+    * @param playlistId playlist's id
+    * @return Response with status 200 and empty body for successful call, otherwise validation response
+    */
+   @PostMapping("/{playlistId}/songs/{songId}")
+   public ResponseEntity addSongToPlaylist(@PathVariable final int songId, @PathVariable final int playlistId) {
+      if (validator.chain(songId > 0, ValidationError.BAD_VALUE, SONG_ID)
+            .check(playlistId > 0, ValidationError.BAD_VALUE, PLAYLIST_ID)) {
+         playlistService.addSongToPlaylist(songId, playlistId);
 
          return ResponseEntity.status(HttpStatus.OK).body(null);
       }

@@ -1,9 +1,14 @@
 package app.service;
 
 import app.dao.PlaylistDao;
+import app.dao.PlaylistSongDao;
+import app.dao.SongDao;
 import app.exception.ApiException;
 import app.model.Playlist;
 import app.request.UpdatePlaylistData;
+
+import app.model.PlaylistSong;
+import app.model.Song;
 import app.validation.ValidationError;
 
 import java.util.Optional;
@@ -13,12 +18,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import static app.constant.FieldConstants.PLAYLIST;
+import static app.constant.FieldConstants.PLAYLIST_ID;
+import static app.constant.FieldConstants.SONG_ID;
 
 @Service
 public class PlaylistService {
 
    @Autowired
    private PlaylistDao playlistDao;
+
+   @Autowired
+   private SongDao songDao;
+
+   @Autowired
+   private PlaylistSongDao playlistSongDao;
 
    /**
     * Service call for creating a new playlist.
@@ -27,6 +40,29 @@ public class PlaylistService {
     */
    public void createNewPlaylist(final Playlist playlist) {
       playlistDao.save(playlist);
+   }
+
+   /**
+    * Service call to add a song to a playlist.
+    *
+    * @param songId song's id
+    * @param playlistId playlist's id
+    * @throws ApiException if no playlist exists for the playlist's id
+    * @throws ApiException if no song exists for the song's id
+    */
+   public void addSongToPlaylist(final int songId, final int playlistId) {
+      final Optional<Song> song = songDao.findById(songId);
+      final Optional<Playlist> playlist = playlistDao.findById(playlistId);
+
+      if (!playlist.isPresent()) {
+         throw new ApiException("Playlist not found", ValidationError.NOT_FOUND, PLAYLIST_ID);
+      }
+
+      if (!song.isPresent()) {
+         throw new ApiException("Song not found", ValidationError.NOT_FOUND, SONG_ID);
+      }
+
+      playlistSongDao.save(PlaylistSong.builder().songId(songId).playlistId(playlistId).build());
    }
 
    /**
