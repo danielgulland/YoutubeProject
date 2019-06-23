@@ -17,6 +17,8 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import static app.constant.FieldConstants.PLAYLIST_ID;
+import static app.constant.FieldConstants.SONG_ID;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.verify;
@@ -151,14 +153,48 @@ public class PlaylistControllerTest extends BaseTest {
 
       // Assert
       verify(validator).check(false, ValidationError.BAD_VALUE, ID_FIELD);
+
+   }
+
+   @Test
+   public void testAddSongToPlaylist_successful() {
+      //Arrange
+      when(validator.chain(true, ValidationError.BAD_VALUE, SONG_ID)).thenReturn(validator);
+      when(validator.check(true, ValidationError.BAD_VALUE, PLAYLIST_ID)).thenReturn(true);
+
+      //Act
+      final ResponseEntity responseEntity = playlistController.addSongToPlaylist(VALID_ID, VALID_ID);
+
+      //Assert
+      verify(validator).chain(true, ValidationError.BAD_VALUE, SONG_ID);
+      verify(validator).check(true, ValidationError.BAD_VALUE, PLAYLIST_ID);
+      verify(playlistService).addSongToPlaylist(VALID_ID, VALID_ID);
+      verifyNoMoreInteractions(validator);
+      verifyNoMoreInteractions(playlistService);
+
+      Assert.assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+      Assert.assertNull(responseEntity.getBody());
+   }
+
+   @Test
+   public void testAddSongToPlaylist_unsuccessful() {
+      //Arrange
+      when(validator.chain(false, ValidationError.BAD_VALUE, SONG_ID)).thenReturn(validator);
+      when(validator.check(false, ValidationError.BAD_VALUE, PLAYLIST_ID)).thenReturn(false);
+      when(validator.getResponseEntity()).thenReturn(buildResponseEntity(HttpStatus.BAD_REQUEST));
+
+      //Act
+      final ResponseEntity responseEntity = playlistController.addSongToPlaylist(INVALID_ID, INVALID_ID);
+
+      //Assert
+      verify(validator).chain(false, ValidationError.BAD_VALUE, SONG_ID);
+      verify(validator).check(false, ValidationError.BAD_VALUE, PLAYLIST_ID);
       verify(validator).getResponseEntity();
       verifyNoMoreInteractions(validator);
       verifyZeroInteractions(playlistService);
 
-      Assert.assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-      Assert.assertNull(response.getBody());
+      Assert.assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
+      Assert.assertNull(responseEntity.getBody());
    }
 }
-
-
 
