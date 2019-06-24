@@ -41,6 +41,22 @@ public class UserController {
    private Validator validator;
 
    /**
+    * Get list of Playlists by the user id.
+    *
+    * @param id user id
+    * @return Response with status 200 and list of Playlists in the body for successful call,
+    *     otherwise validation response
+    */
+   @GetMapping("/{id}/playlists")
+   public ResponseEntity getPlaylistsByUserId(@PathVariable final int id) {
+      if (validator.check(id > 0, ValidationError.BAD_VALUE, ID)) {
+         return ResponseEntity.status(HttpStatus.OK).body(userService.getPlaylistsByUserId(id));
+      }
+
+      return validator.getResponseEntity();
+   }
+
+   /**
     * Get a User by the user id.
     *
     * @param id user id

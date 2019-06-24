@@ -1,6 +1,7 @@
 package app.controller;
 
 import app.BaseTest;
+import app.model.Playlist;
 import app.model.User;
 import app.request.RegistrationData;
 import app.request.UpdateUserData;
@@ -40,6 +41,41 @@ public class UserControllerTest extends BaseTest {
 
    @InjectMocks
    private UserController controller;
+
+   @Test
+   public void testGetPlaylistsByUserId_ValidId() {
+      // Arrange
+      final Playlist playlist = buildPlaylist();
+      when(validator.check(true, ValidationError.BAD_VALUE, ID_FIELD)).thenReturn(true);
+      when(userService.getPlaylistsByUserId(VALID_ID)).thenReturn(ImmutableList.of(playlist));
+
+      // Act
+      final ResponseEntity response = controller.getPlaylistsByUserId(VALID_ID);
+
+      // Assert
+      verify(validator).check(true, ValidationError.BAD_VALUE, ID_FIELD);
+
+      Assert.assertEquals(HttpStatus.OK, response.getStatusCode());
+      Assert.assertNotNull(response.getBody());
+   }
+
+   @Test
+   public void testGetPlaylistsByUserId_InvalidId() {
+      // Arrange
+      when(validator.check(false, ValidationError.BAD_VALUE, ID_FIELD)).thenReturn(false);
+      when(validator.getResponseEntity()).thenReturn(buildResponseEntity(HttpStatus.BAD_REQUEST));
+      
+      // Act
+      final ResponseEntity response = controller.getPlaylistsByUserId(INVALID_ID);
+
+      // Assert
+      verify(validator).check(false, ValidationError.BAD_VALUE, ID_FIELD);
+      verify(validator).getResponseEntity();
+      verifyNoMoreInteractions(validator);
+
+      Assert.assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+      Assert.assertNull(response.getBody());
+   }
 
    @Test
    public void testGetUserById_Successful() {
