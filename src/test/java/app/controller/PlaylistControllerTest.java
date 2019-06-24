@@ -17,6 +17,8 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import com.google.common.collect.ImmutableList;
+
 import static app.constant.FieldConstants.PLAYLIST_ID;
 import static app.constant.FieldConstants.SONG_ID;
 import static org.mockito.ArgumentMatchers.any;
@@ -196,5 +198,20 @@ public class PlaylistControllerTest extends BaseTest {
       Assert.assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
       Assert.assertNull(responseEntity.getBody());
    }
-}
 
+   @Test
+   public void testGetPlaylists() {
+
+      // Arrange
+      final Playlist playlist = buildPlaylist();
+      when(playlistService.getPlaylistsByFilter(NAME, GENRE)).thenReturn(ImmutableList.of(playlist));
+
+      // Act
+      final ResponseEntity response = playlistController.getPlaylists(NAME, GENRE);
+
+      // Assert
+      verify(playlistService).getPlaylistsByFilter(NAME, GENRE);
+      Assert.assertEquals(HttpStatus.OK, response.getStatusCode());
+      Assert.assertEquals(ImmutableList.of(playlist), response.getBody());
+   }
+}
