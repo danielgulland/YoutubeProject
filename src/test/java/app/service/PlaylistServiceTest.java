@@ -270,4 +270,41 @@ public class PlaylistServiceTest extends BaseTest {
          Assert.assertTrue(ex.getFields().contains(PLAYLIST_ID));
       }
    }
+
+   @Test
+   public void testDeletePlaylist_successful() {
+
+      //Arrange
+      final Playlist playlist = buildPlaylist();
+      when(playlistDao.findById(VALID_ID)).thenReturn(Optional.of(playlist));
+
+      //Act
+      playlistService.deletePlaylist(VALID_ID);
+
+      //Assert
+      verify(playlistDao).findById(VALID_ID);
+      verify(playlistDao).delete(any(Playlist.class));
+      verifyNoMoreInteractions(playlistDao);
+   }
+
+   @Test
+   public void testDeletePlaylist_unsuccessful() {
+
+      //Arrange
+      when(playlistDao.findById(INVALID_ID)).thenReturn(Optional.empty());
+
+      try {
+         //Act
+         playlistService.deletePlaylist(INVALID_ID);
+         fail("Exception not thrown");
+      } catch (ApiException ex) {
+         //Assert
+         verify(playlistDao).findById(INVALID_ID);
+         verifyNoMoreInteractions(playlistDao);
+
+         Assert.assertEquals("Playlist not found", ex.getMessage());
+         Assert.assertEquals(ValidationError.NOT_FOUND, ex.getError());
+         Assert.assertTrue(ex.getFields().contains(PLAYLIST_ID));
+      }
+   }
 }

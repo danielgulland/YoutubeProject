@@ -13,6 +13,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -102,6 +103,22 @@ public class PlaylistController {
                                         @RequestBody final UpdatePlaylistData updatePlaylistData) {
       if (validator.check(id > 0, ValidationError.BAD_VALUE, ID)) {
          playlistService.updatePlaylistById(id, updatePlaylistData);
+         return ResponseEntity.status(HttpStatus.OK).body(null);
+      }
+
+      return validator.getResponseEntity();
+   }
+
+   /**
+    * Deletes a playlist by the playlist's id.
+    *
+    * @param id playlist's id
+    * @return Response with status 200 and null in the body for successful call, otherwise validation response
+    */
+   @DeleteMapping("/{id}")
+   public ResponseEntity deletePlaylist(@PathVariable final int id) {
+      if (validator.check(id > 0, ValidationError.BAD_VALUE, ID)) {
+         playlistService.deletePlaylist(id);
          return ResponseEntity.status(HttpStatus.OK).body(null);
       }
 

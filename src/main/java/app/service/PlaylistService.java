@@ -111,4 +111,20 @@ public class PlaylistService {
 
       playlistDao.save(playlist);
    }
+
+   /**
+    * Service call to delete a playlist by id.
+    *
+    * @param id playlist's id
+    * @throws ApiException if no playlist exists for the playlist's id
+    */
+   public void deletePlaylist(final int id) {
+      final Optional<Playlist> playlist = playlistDao.findById(id);
+
+      if (!playlist.isPresent()) {
+         throw new ApiException("Playlist not found", ValidationError.NOT_FOUND, PLAYLIST_ID);
+      }
+
+      playlistDao.delete(playlist.get());
+   }
 }

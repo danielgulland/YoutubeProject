@@ -17,6 +17,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import static app.constant.FieldConstants.ID;
 import static app.constant.FieldConstants.PLAYLIST_ID;
 import static app.constant.FieldConstants.SONG_ID;
 import static org.mockito.ArgumentMatchers.any;
@@ -196,5 +197,43 @@ public class PlaylistControllerTest extends BaseTest {
       Assert.assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
       Assert.assertNull(responseEntity.getBody());
    }
-}
 
+   @Test
+   public void testDeletePlaylist_successful() {
+
+      //Arrange
+      when(validator.check(true, ValidationError.BAD_VALUE, ID)).thenReturn(true);
+
+      //Act
+      final ResponseEntity responseEntity = playlistController.deletePlaylist(VALID_ID);
+
+      //Assert
+      verify(validator).check(true, ValidationError.BAD_VALUE, ID);
+      verify(playlistService).deletePlaylist(VALID_ID);
+      verifyNoMoreInteractions(validator);
+      verifyNoMoreInteractions(playlistService);
+
+      Assert.assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+      Assert.assertNull(responseEntity.getBody());
+   }
+
+   @Test
+   public void testDeletePlaylist_unsuccessful() {
+
+      //Arrange
+      when(validator.check(false, ValidationError.BAD_VALUE, ID)).thenReturn(false);
+      when(validator.getResponseEntity()).thenReturn(buildResponseEntity(HttpStatus.BAD_REQUEST));
+
+      //Act
+      final ResponseEntity responseEntity = playlistController.deletePlaylist(INVALID_ID);
+
+      //Assert
+      verify(validator).check(false, ValidationError.BAD_VALUE, ID);
+      verify(validator).getResponseEntity();
+      verifyNoMoreInteractions(validator);
+      verifyZeroInteractions(playlistService);
+
+      Assert.assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
+      Assert.assertNull(responseEntity.getBody());
+   }
+}
