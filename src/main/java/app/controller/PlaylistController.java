@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import static app.constant.FieldConstants.GENRE;
@@ -54,6 +55,20 @@ public class PlaylistController {
       }
 
       return validator.getResponseEntity();
+   }
+
+
+   /**
+    * Get a list of playlists by the name, genre, or both, if name and genre are empty return all songs.
+    *
+    * @param name name used to search for playlists
+    * @param genre genre used to search for playlists
+    * @return Response with status 200 and Playlist in the body for successful call
+    */
+   @GetMapping()
+   public ResponseEntity getPlaylists(@RequestParam(required = false, defaultValue = "%") final String name,
+                                      @RequestParam(required = false, defaultValue = "%") final String genre) {
+      return ResponseEntity.status(HttpStatus.OK).body(playlistService.getPlaylistsByFilter(name, genre));
    }
 
    /**
@@ -99,7 +114,7 @@ public class PlaylistController {
     */
    @PutMapping("/{id}")
    public ResponseEntity updatePlaylistById(@PathVariable final int id,
-                                        @RequestBody final UpdatePlaylistData updatePlaylistData) {
+                                            @RequestBody final UpdatePlaylistData updatePlaylistData) {
       if (validator.check(id > 0, ValidationError.BAD_VALUE, ID)) {
          playlistService.updatePlaylistById(id, updatePlaylistData);
          return ResponseEntity.status(HttpStatus.OK).body(null);
