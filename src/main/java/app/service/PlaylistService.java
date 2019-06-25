@@ -11,6 +11,7 @@ import app.model.PlaylistSong;
 import app.model.Song;
 import app.validation.ValidationError;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
@@ -126,5 +127,15 @@ public class PlaylistService {
       }
 
       playlistDao.delete(playlist.get());
+   }
+
+   /** Service call to get playlists by name or genre.
+    *
+    * @param name name to filter by
+    * @param genre genre to filter by
+    * @return List of Playlists that match the name, genre, both, or returns all playlists
+    */
+   public List<Playlist> getPlaylistsByFilter(final String name, final String genre) {
+      return playlistDao.findByNameLikeAndGenreLike(name, genre);
    }
 }

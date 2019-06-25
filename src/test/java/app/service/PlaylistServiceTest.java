@@ -11,6 +11,7 @@ import app.model.Song;
 import app.request.UpdatePlaylistData;
 import app.validation.ValidationError;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.Assert;
@@ -20,8 +21,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import com.google.common.collect.ImmutableList;
+
 import static app.constant.FieldConstants.PLAYLIST_ID;
 import static app.constant.FieldConstants.SONG_ID;
+
 import static org.assertj.core.api.Fail.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -306,5 +310,23 @@ public class PlaylistServiceTest extends BaseTest {
          Assert.assertEquals(ValidationError.NOT_FOUND, ex.getError());
          Assert.assertTrue(ex.getFields().contains(PLAYLIST_ID));
       }
+   }
+
+   @Test
+   public void testGetPlaylistsByFilter() {
+
+      // Arrange
+      final Playlist playlist = buildPlaylist();
+      when(playlistDao.findByNameLikeAndGenreLike(NAME, GENRE)).thenReturn(ImmutableList.of(playlist));
+
+      // Act
+      final List<Playlist> playlists = playlistService.getPlaylistsByFilter(NAME, GENRE);
+
+      // Assert
+      verify(playlistDao).findByNameLikeAndGenreLike(NAME, GENRE);
+      verifyNoMoreInteractions(playlistDao);
+
+      Assert.assertEquals(1, playlists.size());
+      Assert.assertTrue(playlists.contains(playlist));
    }
 }
