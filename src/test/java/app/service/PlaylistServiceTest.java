@@ -276,7 +276,6 @@ public class PlaylistServiceTest extends BaseTest {
    }
 
    @Test
-<<<<<<< HEAD
    public void testDeletePlaylist_successful() {
 
       //Arrange
@@ -312,8 +311,8 @@ public class PlaylistServiceTest extends BaseTest {
          Assert.assertTrue(ex.getFields().contains(PLAYLIST_ID));
       }
    }
-}
-=======
+
+   @Test
    public void testGetPlaylistsByFilter() {
 
       // Arrange
@@ -331,4 +330,3 @@ public class PlaylistServiceTest extends BaseTest {
       Assert.assertTrue(playlists.contains(playlist));
    }
 }
->>>>>>> get list of playlists

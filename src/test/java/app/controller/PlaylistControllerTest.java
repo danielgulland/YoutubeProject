@@ -17,11 +17,8 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-<<<<<<< HEAD
 import static app.constant.FieldConstants.ID;
-=======
 import com.google.common.collect.ImmutableList;
->>>>>>> get list of playlists
 import static app.constant.FieldConstants.PLAYLIST_ID;
 import static app.constant.FieldConstants.SONG_ID;
 import static org.mockito.ArgumentMatchers.any;
@@ -203,7 +200,6 @@ public class PlaylistControllerTest extends BaseTest {
    }
 
    @Test
-<<<<<<< HEAD
    public void testDeletePlaylist_successful() {
 
       //Arrange
@@ -241,8 +237,8 @@ public class PlaylistControllerTest extends BaseTest {
       Assert.assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
       Assert.assertNull(responseEntity.getBody());
    }
-}
-=======
+
+   @Test
    public void testGetPlaylists() {
 
       // Arrange
@@ -258,4 +254,4 @@ public class PlaylistControllerTest extends BaseTest {
       Assert.assertEquals(ImmutableList.of(playlist), response.getBody());
    }
 }
->>>>>>> get list of playlists
+
