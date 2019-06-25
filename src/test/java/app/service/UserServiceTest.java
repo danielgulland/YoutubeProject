@@ -1,8 +1,10 @@
 package app.service;
 
 import app.BaseTest;
+import app.dao.PlaylistDao;
 import app.dao.UserDao;
 import app.exception.ApiException;
+import app.model.Playlist;
 import app.model.User;
 import app.request.UpdateUserData;
 import app.validation.ValidationError;
@@ -28,6 +30,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -36,8 +39,54 @@ public class UserServiceTest extends BaseTest {
    @Mock
    private UserDao userDao;
 
+   @Mock
+   private PlaylistDao playlistDao;
+
    @InjectMocks
    private UserService userService;
+
+   @Test
+   public void testGetPlaylistsByUserId_ReturnsUser() {
+      // Arrange
+      final User existingUser = buildUser();
+      final Playlist playlist = buildPlaylist();
+      when(userDao.findById(VALID_ID)).thenReturn(Optional.of(existingUser));
+      when(playlistDao.findByUserId(VALID_ID)).thenReturn(ImmutableList.of(playlist));
+
+      // Act
+      final List<Playlist> playlists = userService.getPlaylistsByUserId(VALID_ID);
+
+      // Assert
+      verify(userDao).findById(VALID_ID);
+      verify(playlistDao).findByUserId(VALID_ID);
+      verifyNoMoreInteractions(userDao);
+      verifyNoMoreInteractions(playlistDao);
+
+      Assert.assertTrue(playlists.size() == 1);
+      Assert.assertTrue(playlists.contains(playlist));
+   }
+
+   @Test
+   public void testGetPlaylistsByUserId_UserNotFound() {
+      // Arrange
+      when(userDao.findById(VALID_ID)).thenReturn(Optional.empty());
+
+      // Act
+      try {
+         userService.getPlaylistsByUserId(VALID_ID);
+         fail("exception not thrown");
+      } catch (ApiException ex) {
+         //Assert
+         verify(userDao).findById(VALID_ID);
+         verifyNoMoreInteractions(userDao);
+         verifyZeroInteractions(playlistDao);
+
+         Assert.assertEquals("User does not exist", ex.getMessage());
+         Assert.assertEquals(ValidationError.NOT_FOUND, ex.getError());
+         Assert.assertEquals(1, ex.getFields().size());
+         Assert.assertTrue(ex.getFields().contains("user"));
+      }
+   }
 
    @Test
    public void testGetUserById_ReturnsUser() {

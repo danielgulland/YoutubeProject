@@ -1,7 +1,9 @@
 package app.service;
 
+import app.dao.PlaylistDao;
 import app.dao.UserDao;
 import app.exception.ApiException;
+import app.model.Playlist;
 import app.model.User;
 import app.request.UpdateUserData;
 import app.validation.ValidationError;
@@ -24,6 +26,25 @@ public class UserService {
 
    @Autowired
    private UserDao userDao;
+
+   @Autowired
+   private PlaylistDao playlistDao;
+
+   /**
+    * Service call to get all playlists by user id.
+    *
+    * @param id user id to check for
+    * @return List of Playlists found for given user id
+    */
+   public List<Playlist> getPlaylistsByUserId(final int id) {
+      final Optional<User> user = userDao.findById(id);
+
+      if (!user.isPresent()) {
+         throw new ApiException("User does not exist", ValidationError.NOT_FOUND, USER);
+      }
+
+      return playlistDao.findByUserId(id);
+   }
 
    /**
     * Service call to get a user by id.

@@ -8,4 +8,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface PlaylistDao extends JpaRepository<Playlist, Integer> {
    List<Playlist> findByNameLikeAndGenreLike(final String name, final String genre);
+   
+   List<Playlist> findByUserId(final int id);
 }
