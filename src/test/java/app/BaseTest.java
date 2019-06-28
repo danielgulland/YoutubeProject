@@ -2,6 +2,7 @@ package app;
 
 import app.model.PasswordReset;
 import app.model.Playlist;
+import app.model.PlaylistSong;
 import app.model.Song;
 import app.model.User;
 import app.request.CreatePlaylistData;
@@ -25,6 +26,7 @@ public class BaseTest {
    /* Constants */
    protected static final int VALID_ID = 1;
    protected static final int INVALID_ID = 0;
+   protected static final String ID_FIELD = "id";
 
    // User
    protected static final String USERNAME = "test";
@@ -39,17 +41,22 @@ public class BaseTest {
 
    // Song
    protected static final String SONG = "song";
+   protected static final String SONG_ID = "songId";
    protected static final String TITLE = "title";
    protected static final String INVALID_TITLE = " ";
    protected static final String REFERENCE = "reference";
 
    // Playlist
    protected static final String PLAYLIST = "playlist";
-   protected static final String ID_FIELD = "id";
+   protected static final String PLAYLIST_ID = "playlistId";
    protected static final String GENRE = "genre";
    protected static final String NAME = "name";
    protected static final String NEW_GENRE = "newGenre";
    protected static final String NEW_NAME = "newName";
+
+   // PlaylistSong
+   protected static final String PLAYLIST_SONG = "playlistSong";
+   protected static final String PLAYLIST_SONG_ID = "playlistSongId";
 
    // PasswordReset
    protected static final String TOKEN = "token";
@@ -152,6 +159,14 @@ public class BaseTest {
             .isPrivate(false)
             .genre(GENRE)
             .dateCreated(ZonedDateTime.now())
+            .build();
+   }
+
+   // PlaylistSong
+   protected PlaylistSong buildPlaylistSong() {
+      return PlaylistSong.builder()
+            .playlistId(VALID_ID)
+            .songId(VALID_ID)
             .build();
    }
 
