@@ -46,5 +46,20 @@ CREATE TABLE Password_Reset (
         ON DELETE CASCADE
 );
 
+CREATE TABLE Room (
+	id INTEGER UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(50) NOT NULL,
+    private BOOLEAN NOT NULL DEFAULT FALSE,
+    user_id INTEGER UNSIGNED NOT NULL,
+    playlist_id INTEGER UNSIGNED,
+    FOREIGN KEY (user_id)
+		REFERENCES User (id),
+	FOREIGN KEY (playlist_id)
+		REFERENCES Playlist (id)
+);
+
 INSERT INTO User (username, email, password_hash) VALUES ('test', 'test@test.com', 'test');
 INSERT INTO Song (title, reference) VALUES ('testTitle', 'testReference');
+INSERT INTO Playlist (name, user_id, genre, date_created) VALUES ('testPlaylist', 1, 'rap', '2019-06-29 00:00:00');
+INSERT INTO Playlist_Song (playlist_id, song_id) VALUES (1,1);
+INSERT INTO Room (name, user_id, playlist_id) VALUES ('testRoom', 1, 1);
