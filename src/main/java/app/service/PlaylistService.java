@@ -11,6 +11,7 @@ import app.model.PlaylistSong;
 import app.model.Song;
 import app.validation.ValidationError;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -81,6 +82,26 @@ public class PlaylistService {
       }
 
       throw new ApiException("Playlist not found", ValidationError.NOT_FOUND, PLAYLIST);
+   }
+
+   /**
+    * Get songs in a playlist.
+    *
+    * @param id Playlist's id
+    * @return List of songs for a specific playlist
+    */
+   public List<Song> getSongsInPlaylist(final int id) {
+      final List<PlaylistSong> playlistSongs = playlistSongDao.getPlaylistSong(id);
+
+      if (!playlistSongs.isEmpty()) {
+         final List<Song> songs = new ArrayList<>();
+         for (PlaylistSong existingPlaylistSong : playlistSongs) {
+            songs.add(songDao.findById(existingPlaylistSong.getSongId()).get());
+         }
+
+         return songs;
+      }
+      throw new ApiException("Playlist not found", ValidationError.NOT_FOUND, "playlist");
    }
 
    /**

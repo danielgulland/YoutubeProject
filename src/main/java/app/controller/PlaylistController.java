@@ -109,6 +109,20 @@ public class PlaylistController {
    }
 
    /**
+    * Gets all of the songs in a playlist.
+    *
+    *
+    */
+   @GetMapping("/{id}/songs")
+   public ResponseEntity getSongsInPlaylist(@PathVariable final int id) {
+      if (validator.check(id > 0, ValidationError.BAD_VALUE, PLAYLIST_ID)) {
+         return ResponseEntity.status(HttpStatus.OK).body(playlistService.getSongsInPlaylist(id));
+      }
+
+      return validator.getResponseEntity();
+   }
+
+   /**
     * Updates an existing playlist given the information.
     *
     * @param id playlist id
