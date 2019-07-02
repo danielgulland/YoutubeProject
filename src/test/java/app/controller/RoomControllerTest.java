@@ -72,4 +72,42 @@ public class RoomControllerTest extends BaseTest {
       Assert.assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
       Assert.assertNull(response.getBody());
    }
+
+   @Test
+   public void testGetPlaylistById_ValidId() {
+      // Arrange
+      final Room room = buildRoom();
+      when(validator.check(true, ValidationError.BAD_VALUE, ID_FIELD)).thenReturn(true);
+      when(roomService.getRoomById(VALID_ID)).thenReturn(room);
+
+      // Act
+      final ResponseEntity response = roomController.getRoomById(VALID_ID);
+
+      // Assert
+      verify(validator).check(true, ValidationError.BAD_VALUE, ID_FIELD);
+      verifyNoMoreInteractions(validator);
+      verify(roomService).getRoomById(VALID_ID);
+
+      Assert.assertEquals(HttpStatus.OK, response.getStatusCode());
+      Assert.assertEquals(room, response.getBody());
+   }
+
+   @Test
+   public void testGetPlaylistById_InvalidId() {
+      // Arrange
+      when(validator.check(false, ValidationError.BAD_VALUE, ID_FIELD)).thenReturn(false);
+      when(validator.getResponseEntity()).thenReturn(buildResponseEntity(HttpStatus.BAD_REQUEST));
+
+      // Act
+      final ResponseEntity response = roomController.getRoomById(INVALID_ID);
+
+      // Assert
+      verify(validator).check(false, ValidationError.BAD_VALUE, ID_FIELD);
+      verify(validator).getResponseEntity();
+      verifyNoMoreInteractions(validator);
+      verifyZeroInteractions(roomService);
+
+      Assert.assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+      Assert.assertNull(response.getBody());
+   }
 }
