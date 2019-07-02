@@ -17,6 +17,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.assertj.core.api.Fail.fail;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 
@@ -66,7 +67,43 @@ public class RoomServiceTest extends BaseTest {
          roomService.getRoomById(INVALID_ID);
          fail("Exception not thrown");
       } catch (ApiException ex) {
+         // Assert
          verify(roomDao).findById(INVALID_ID);
+
+         Assert.assertEquals("Room does not exist", ex.getMessage());
+         Assert.assertEquals(ValidationError.NOT_FOUND, ex.getError());
+         Assert.assertTrue(ex.getFields().size() == 1);
+         Assert.assertTrue(ex.getFields().contains(ROOM));
+      }
+   }
+
+   @Test
+   public void testDeleteRoomById_ValidId() {
+      // Arrange
+      final Room existingRoom = buildRoom();
+      when(roomDao.findById(VALID_ID)).thenReturn(Optional.of(existingRoom));
+
+      // Act
+      roomService.deleteRoomById(VALID_ID);
+
+      // Assert
+      verify(roomDao).findById(VALID_ID);
+      verify(roomDao).deleteById(VALID_ID);
+   }
+
+   @Test
+   public void testDeleteRoomById_InvalidId() {
+      // Arrange
+      when(roomDao.findById(INVALID_ID)).thenReturn(Optional.empty());
+
+      // Act
+      try {
+         roomService.deleteRoomById(INVALID_ID);
+         fail("Exception not thrown");
+      } catch (ApiException ex) {
+         // Assert
+         verify(roomDao).findById(INVALID_ID);
+         verifyNoMoreInteractions(roomDao);
 
          Assert.assertEquals("Room does not exist", ex.getMessage());
          Assert.assertEquals(ValidationError.NOT_FOUND, ex.getError());

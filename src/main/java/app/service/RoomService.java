@@ -42,4 +42,19 @@ public class RoomService {
 
       return room.get();
    }
+
+   /**
+    * Service call for deleting a room by id.
+    *
+    * @param id room id to check for
+    */
+   public void deleteRoomById(final int id) {
+      final Optional<Room> room = roomDao.findById(id);
+
+      if (!room.isPresent()) {
+         throw new ApiException("Room does not exist", ValidationError.NOT_FOUND, ROOM);
+      }
+
+      roomDao.deleteById(id);
+   }
 }

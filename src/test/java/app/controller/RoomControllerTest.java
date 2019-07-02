@@ -74,7 +74,7 @@ public class RoomControllerTest extends BaseTest {
    }
 
    @Test
-   public void testGetPlaylistById_ValidId() {
+   public void testGetRoomById_ValidId() {
       // Arrange
       final Room room = buildRoom();
       when(validator.check(true, ValidationError.BAD_VALUE, ID_FIELD)).thenReturn(true);
@@ -93,7 +93,7 @@ public class RoomControllerTest extends BaseTest {
    }
 
    @Test
-   public void testGetPlaylistById_InvalidId() {
+   public void testGetRoomById_InvalidId() {
       // Arrange
       when(validator.check(false, ValidationError.BAD_VALUE, ID_FIELD)).thenReturn(false);
       when(validator.getResponseEntity()).thenReturn(buildResponseEntity(HttpStatus.BAD_REQUEST));
@@ -105,6 +105,41 @@ public class RoomControllerTest extends BaseTest {
       verify(validator).check(false, ValidationError.BAD_VALUE, ID_FIELD);
       verify(validator).getResponseEntity();
       verifyNoMoreInteractions(validator);
+      verifyZeroInteractions(roomService);
+
+      Assert.assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+      Assert.assertNull(response.getBody());
+   }
+
+   @Test
+   public void testDeleteRoomById_ValidId() {
+      // Arrange
+      when(validator.check(true, ValidationError.BAD_VALUE, ID_FIELD)).thenReturn(true);
+
+      // Act
+      final ResponseEntity response = roomController.deleteRoomById(VALID_ID);
+
+      // Assert
+      verify(validator).check(true, ValidationError.BAD_VALUE, ID_FIELD);
+      verifyNoMoreInteractions(validator);
+      verify(roomService).deleteRoomById(VALID_ID);
+
+      Assert.assertEquals(HttpStatus.OK, response.getStatusCode());
+      Assert.assertNull(response.getBody());
+   }
+
+   @Test
+   public void testDeleteRoomById_InvalidId() {
+      // Arrange
+      when(validator.check(false, ValidationError.BAD_VALUE, ID_FIELD)).thenReturn(false);
+      when(validator.getResponseEntity()).thenReturn(buildResponseEntity(HttpStatus.BAD_REQUEST));
+
+      // Act
+      final ResponseEntity response = roomController.deleteRoomById(INVALID_ID);
+
+      // Assert
+      verify(validator).check(false, ValidationError.BAD_VALUE, ID_FIELD);
+      verify(validator).getResponseEntity();
       verifyZeroInteractions(roomService);
 
       Assert.assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
