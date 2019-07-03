@@ -9,6 +9,8 @@ import app.validation.ValidationError;
 import java.util.Optional;
 
 import org.junit.Assert;
+import app.model.Room;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -19,6 +21,7 @@ import static org.assertj.core.api.Fail.fail;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
 
 
 @RunWith(MockitoJUnitRunner.class)
