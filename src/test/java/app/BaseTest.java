@@ -3,9 +3,11 @@ package app;
 import app.model.PasswordReset;
 import app.model.Playlist;
 import app.model.PlaylistSong;
+import app.model.Room;
 import app.model.Song;
 import app.model.User;
 import app.request.CreatePlaylistData;
+import app.request.CreateRoomData;
 import app.request.CreateSongData;
 import app.request.PasswordResetData;
 import app.request.RegistrationData;
@@ -177,6 +179,25 @@ public class BaseTest {
             .token(TOKEN)
             .expires(ZonedDateTime.now().plusMinutes(30))
             .user(buildUser())
+            .build();
+   }
+
+   // Room
+   protected CreateRoomData buildCreateRoomData() {
+      final CreateRoomData data = new CreateRoomData();
+      data.setName(NAME);
+      data.setUserId(VALID_ID);
+      data.setPrivate(false);
+
+      return data;
+   }
+
+   protected Room buildRoom() {
+      return Room.builder()
+            .name(NAME)
+            .userId(VALID_ID)
+            .isPrivate(false)
+            .playlistId(VALID_ID)
             .build();
    }
 
