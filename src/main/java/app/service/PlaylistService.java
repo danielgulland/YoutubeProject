@@ -5,10 +5,9 @@ import app.dao.PlaylistSongDao;
 import app.dao.SongDao;
 import app.exception.ApiException;
 import app.model.Playlist;
-import app.request.UpdatePlaylistData;
-
 import app.model.PlaylistSong;
 import app.model.Song;
+import app.request.UpdatePlaylistData;
 import app.validation.ValidationError;
 
 import java.util.List;
@@ -20,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import static app.constant.FieldConstants.PLAYLIST;
 import static app.constant.FieldConstants.PLAYLIST_ID;
+import static app.constant.FieldConstants.PLAYLIST_SONG;
 import static app.constant.FieldConstants.SONG_ID;
 
 @Service
@@ -127,6 +127,22 @@ public class PlaylistService {
       }
 
       playlistDao.delete(playlist.get());
+   }
+
+   /**
+    * Service call to delete a song in a specific playlist.
+    *
+    * @param playlistSongId playlist_song id to check for
+    */
+   public void deleteSongInPlaylist(final int playlistSongId) {
+
+      final Optional<PlaylistSong> existingPlaylistSong = playlistSongDao.findById(playlistSongId);
+
+      if (!existingPlaylistSong.isPresent()) {
+         throw new ApiException("Song does not exist in this playlist", ValidationError.NOT_FOUND, PLAYLIST_SONG);
+      }
+
+      playlistSongDao.delete(existingPlaylistSong.get());
    }
 
    /** Service call to get playlists by name or genre.

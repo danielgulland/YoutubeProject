@@ -27,6 +27,7 @@ import static app.constant.FieldConstants.GENRE;
 import static app.constant.FieldConstants.ID;
 import static app.constant.FieldConstants.NAME;
 import static app.constant.FieldConstants.PLAYLIST_ID;
+import static app.constant.FieldConstants.PLAYLIST_SONG_ID;
 import static app.constant.FieldConstants.SONG_ID;
 
 @RestController
@@ -136,6 +137,23 @@ public class PlaylistController {
    public ResponseEntity deletePlaylist(@PathVariable final int id) {
       if (validator.check(id > 0, ValidationError.BAD_VALUE, ID)) {
          playlistService.deletePlaylist(id);
+         return ResponseEntity.status(HttpStatus.OK).body(null);
+      }
+
+      return validator.getResponseEntity();
+   }
+
+   /**
+    *  Deletes a song in a specific playlist.
+    *
+    * @param playlistSongId playlist_song id
+    * @return Response with status 200 and null in the body for successful call, otherwise validation response
+    */
+   @DeleteMapping("/songs/{playlistSongId}")
+   public ResponseEntity deleteSongInPlaylist(@PathVariable final int playlistSongId) {
+      if (validator.check(playlistSongId > 0, ValidationError.BAD_VALUE, PLAYLIST_SONG_ID)) {
+         playlistService.deleteSongInPlaylist(playlistSongId);
+
          return ResponseEntity.status(HttpStatus.OK).body(null);
       }
 
