@@ -29,6 +29,10 @@ public final class FieldConstants {
    /* Room */
    public static final String ROOM = "room";
 
+   /* PlaylistSong */
+   public static final String PLAYLIST_SONG = "playlistSong";
+   public static final String PLAYLIST_SONG_ID = "playlistSongId";
+
    /**
     * Prevent instantiating this class.
     */

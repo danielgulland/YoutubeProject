@@ -6,6 +6,7 @@ import app.model.Room;
 import app.validation.ValidationError;
 
 import java.util.Optional;
+import app.model.Room;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
