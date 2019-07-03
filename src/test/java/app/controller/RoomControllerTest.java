@@ -145,5 +145,4 @@ public class RoomControllerTest extends BaseTest {
       Assert.assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
       Assert.assertNull(response.getBody());
    }
-
 }
