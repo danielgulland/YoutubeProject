@@ -64,6 +64,9 @@ public class BaseTest {
    protected static final String TOKEN = "token";
    protected static final String INVALID_TOKEN = "";
 
+   // Room
+   protected static final String ROOM = "room";
+
    // ApiException
    protected static final String MESSAGE = "test api exception";
    protected static final ValidationError ERROR = ValidationError.BAD_VALUE;

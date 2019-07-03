@@ -26,6 +26,9 @@ public final class FieldConstants {
    public static final String GENRE = "genre";
    public static final String PLAYLIST_ID = "playlistId";
 
+   /* Room */
+   public static final String ROOM = "room";
+
    /* PlaylistSong */
    public static final String PLAYLIST_SONG = "playlistSong";
    public static final String PLAYLIST_SONG_ID = "playlistSongId";
