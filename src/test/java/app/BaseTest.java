@@ -2,9 +2,12 @@ package app;
 
 import app.model.PasswordReset;
 import app.model.Playlist;
+import app.model.PlaylistSong;
+import app.model.Room;
 import app.model.Song;
 import app.model.User;
 import app.request.CreatePlaylistData;
+import app.request.CreateRoomData;
 import app.request.CreateSongData;
 import app.request.PasswordResetData;
 import app.request.RegistrationData;
@@ -25,6 +28,7 @@ public class BaseTest {
    /* Constants */
    protected static final int VALID_ID = 1;
    protected static final int INVALID_ID = 0;
+   protected static final String ID_FIELD = "id";
 
    // User
    protected static final String USERNAME = "test";
@@ -39,21 +43,29 @@ public class BaseTest {
 
    // Song
    protected static final String SONG = "song";
+   protected static final String SONG_ID = "songId";
    protected static final String TITLE = "title";
    protected static final String INVALID_TITLE = " ";
    protected static final String REFERENCE = "reference";
 
    // Playlist
    protected static final String PLAYLIST = "playlist";
-   protected static final String ID_FIELD = "id";
+   protected static final String PLAYLIST_ID = "playlistId";
    protected static final String GENRE = "genre";
    protected static final String NAME = "name";
    protected static final String NEW_GENRE = "newGenre";
    protected static final String NEW_NAME = "newName";
 
+   // PlaylistSong
+   protected static final String PLAYLIST_SONG = "playlistSong";
+   protected static final String PLAYLIST_SONG_ID = "playlistSongId";
+
    // PasswordReset
    protected static final String TOKEN = "token";
    protected static final String INVALID_TOKEN = "";
+
+   // Room
+   protected static final String ROOM = "room";
 
    // ApiException
    protected static final String MESSAGE = "test api exception";
@@ -155,6 +167,14 @@ public class BaseTest {
             .build();
    }
 
+   // PlaylistSong
+   protected PlaylistSong buildPlaylistSong() {
+      return PlaylistSong.builder()
+            .playlistId(VALID_ID)
+            .songId(VALID_ID)
+            .build();
+   }
+
    // PasswordReset
    protected PasswordReset buildPasswordReset() {
       return PasswordReset.builder()
@@ -162,6 +182,25 @@ public class BaseTest {
             .token(TOKEN)
             .expires(ZonedDateTime.now().plusMinutes(30))
             .user(buildUser())
+            .build();
+   }
+
+   // Room
+   protected CreateRoomData buildCreateRoomData() {
+      final CreateRoomData data = new CreateRoomData();
+      data.setName(NAME);
+      data.setUserId(VALID_ID);
+      data.setPrivate(false);
+
+      return data;
+   }
+
+   protected Room buildRoom() {
+      return Room.builder()
+            .name(NAME)
+            .userId(VALID_ID)
+            .isPrivate(false)
+            .playlistId(VALID_ID)
             .build();
    }
 

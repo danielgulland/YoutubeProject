@@ -23,8 +23,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import com.google.common.collect.ImmutableList;
 
-import static app.constant.FieldConstants.PLAYLIST_ID;
-import static app.constant.FieldConstants.SONG_ID;
 import static org.assertj.core.api.Fail.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -367,4 +365,39 @@ public class PlaylistServiceTest extends BaseTest {
          Assert.assertTrue(ex.getFields().contains(PLAYLIST));
       }
    }
+
+   @Test
+   public void testDeleteSongInPlaylist_PlaylistSongNotFound() {
+      // Arrange
+      when(playlistSongDao.findById(VALID_ID)).thenReturn(Optional.empty());
+
+      // Act
+      try {
+         playlistService.deleteSongInPlaylist(VALID_ID);
+         fail("Exception not thrown");
+      } catch (ApiException ex) {
+         // Assert
+         verify(playlistSongDao).findById(VALID_ID);
+         verifyNoMoreInteractions(playlistSongDao);
+
+         Assert.assertEquals("Song does not exist in this playlist", ex.getMessage());
+         Assert.assertEquals(ValidationError.NOT_FOUND, ex.getError());
+         Assert.assertTrue(ex.getFields().size() == 1);
+         Assert.assertTrue(ex.getFields().contains(PLAYLIST_SONG));
+      }
+   }
+
+   @Test
+   public void testDeleteSongInPlaylist_Successful() {
+      // Arrange
+      when(playlistSongDao.findById(VALID_ID)).thenReturn(Optional.of(buildPlaylistSong()));
+
+      // Act
+      playlistService.deleteSongInPlaylist(VALID_ID);
+
+      // Assert
+      verify(playlistSongDao).findById(VALID_ID);
+      verify(playlistSongDao).delete(any(PlaylistSong.class));
+   }
 }
+
