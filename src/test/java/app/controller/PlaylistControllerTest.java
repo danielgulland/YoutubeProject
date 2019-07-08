@@ -2,6 +2,7 @@ package app.controller;
 
 import app.BaseTest;
 import app.model.Playlist;
+import app.model.Song;
 import app.request.CreatePlaylistData;
 import app.request.UpdatePlaylistData;
 import app.service.PlaylistService;
@@ -285,5 +286,43 @@ public class PlaylistControllerTest extends BaseTest {
       Assert.assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
       Assert.assertNull(response.getBody());
    }
-}
 
+   @Test
+   public void testGetSongsInPlaylist_successful() {
+
+      //Arrange
+      final Song song = buildSong();
+      when(validator.check(true, ValidationError.BAD_VALUE, PLAYLIST_ID)).thenReturn(true);
+      when(playlistService.getSongsInPlaylist(VALID_ID)).thenReturn(ImmutableList.of(song));
+
+      //Act
+      final ResponseEntity response = playlistController.getSongsInPlaylist(VALID_ID);
+
+      //Assert
+      verify(playlistService).getSongsInPlaylist(VALID_ID);
+      verify(validator).check(true, ValidationError.BAD_VALUE, PLAYLIST_ID);
+      verifyNoMoreInteractions(playlistService);
+      verifyNoMoreInteractions(validator);
+      Assert.assertEquals(HttpStatus.OK, response.getStatusCode());
+      Assert.assertEquals(ImmutableList.of(song), response.getBody());
+   }
+
+   @Test
+   public void testGetSongsInPlaylist_unsuccessful() {
+
+      //Arrange
+      when(validator.check(false, ValidationError.BAD_VALUE, PLAYLIST_ID)).thenReturn(false);
+      when(validator.getResponseEntity()).thenReturn(buildResponseEntity(HttpStatus.NOT_FOUND));
+
+      //Act
+      final ResponseEntity response = playlistController.getSongsInPlaylist(INVALID_ID);
+
+      //Assert
+      verify(validator).check(false, ValidationError.BAD_VALUE, PLAYLIST_ID);
+      verify(validator).getResponseEntity();
+      verifyZeroInteractions(playlistService);
+      verifyNoMoreInteractions(validator);
+      Assert.assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+      Assert.assertNull(response.getBody());
+   }
+}

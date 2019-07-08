@@ -328,6 +328,45 @@ public class PlaylistServiceTest extends BaseTest {
    }
 
    @Test
+   public void testGetSongsInPlaylist_successful() {
+
+      //Arrange
+      final Song song = buildSong();
+      final Playlist playlists = buildPlaylist();
+      playlists.setSongs(ImmutableList.of(song));
+      when(playlistDao.findById(VALID_ID)).thenReturn(Optional.of(playlists));
+
+      //Act
+      final List<Song> songs = playlistService.getSongsInPlaylist(VALID_ID);
+
+      //Assert
+      verify(playlistDao).findById(VALID_ID);
+      verifyNoMoreInteractions(playlistDao);
+      Assert.assertEquals(1, songs.size());
+      Assert.assertTrue(songs.contains(song));
+   }
+
+   @Test
+   public void testGetSongsInPlaylist_unsuccessful() {
+
+      //Arrange
+      when(playlistDao.findById(INVALID_ID)).thenReturn(Optional.empty());
+
+      try {
+         //Act
+         final List<Song> songs = playlistService.getSongsInPlaylist(INVALID_ID);
+         fail("Exception not thrown");
+      } catch (ApiException ex) {
+         //Assert
+         verify(playlistDao).findById(INVALID_ID);
+         verifyNoMoreInteractions(playlistDao);
+         Assert.assertEquals("Playlist not found", ex.getMessage());
+         Assert.assertEquals(ValidationError.NOT_FOUND, ex.getError());
+         Assert.assertTrue(ex.getFields().contains(PLAYLIST));
+      }
+   }
+
+   @Test
    public void testDeleteSongInPlaylist_PlaylistSongNotFound() {
       // Arrange
       when(playlistSongDao.findById(VALID_ID)).thenReturn(Optional.empty());
@@ -361,3 +400,4 @@ public class PlaylistServiceTest extends BaseTest {
       verify(playlistSongDao).delete(any(PlaylistSong.class));
    }
 }
+

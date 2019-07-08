@@ -84,6 +84,23 @@ public class PlaylistService {
    }
 
    /**
+    * Get songs in a playlist.
+    *
+    * @param id Playlist's id
+    * @return List of songs for a specific playlist
+    * @throws ApiException if no playlist exists for the playlist's id
+    */
+   public List<Song> getSongsInPlaylist(final int id) {
+      final Optional<Playlist> playlist = playlistDao.findById(id);
+
+      if (!playlist.isPresent()) {
+         throw new ApiException("Playlist not found", ValidationError.NOT_FOUND, "playlist");
+      }
+
+      return playlist.get().getSongs();
+   }
+
+   /**
     * Service call to update a playlist by id.
     *
     * @param id playlist id to check for
