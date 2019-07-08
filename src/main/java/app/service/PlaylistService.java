@@ -5,13 +5,11 @@ import app.dao.PlaylistSongDao;
 import app.dao.SongDao;
 import app.exception.ApiException;
 import app.model.Playlist;
-import app.request.UpdatePlaylistData;
-
 import app.model.PlaylistSong;
 import app.model.Song;
+import app.request.UpdatePlaylistData;
 import app.validation.ValidationError;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -89,19 +87,16 @@ public class PlaylistService {
     *
     * @param id Playlist's id
     * @return List of songs for a specific playlist
+    * @throws ApiException if no playlist exists for the playlist's id
     */
    public List<Song> getSongsInPlaylist(final int id) {
-      final List<PlaylistSong> playlistSongs = playlistSongDao.getPlaylistSong(id);
+      final Optional<Playlist> playlist = playlistDao.findById(id);
 
-      if (!playlistSongs.isEmpty()) {
-         final List<Song> songs = new ArrayList<>();
-         for (PlaylistSong existingPlaylistSong : playlistSongs) {
-            songs.add(songDao.findById(existingPlaylistSong.getSongId()).get());
-         }
-
-         return songs;
+      if (!playlist.isPresent()) {
+         throw new ApiException("Playlist not found", ValidationError.NOT_FOUND, "playlist");
       }
-      throw new ApiException("Playlist not found", ValidationError.NOT_FOUND, "playlist");
+
+      return playlist.get().getSongs();
    }
 
    /**

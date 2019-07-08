@@ -111,7 +111,8 @@ public class PlaylistController {
    /**
     * Gets all of the songs in a playlist.
     *
-    *
+    * @param id playlist's id
+    * @return Response with status 200 and list of songs in body for successful call, otherwise validation response
     */
    @GetMapping("/{id}/songs")
    public ResponseEntity getSongsInPlaylist(@PathVariable final int id) {

@@ -25,7 +25,6 @@ import com.google.common.collect.ImmutableList;
 
 import static app.constant.FieldConstants.PLAYLIST_ID;
 import static app.constant.FieldConstants.SONG_ID;
-
 import static org.assertj.core.api.Fail.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -328,5 +327,44 @@ public class PlaylistServiceTest extends BaseTest {
 
       Assert.assertEquals(1, playlists.size());
       Assert.assertTrue(playlists.contains(playlist));
+   }
+
+   @Test
+   public void testGetSongsInPlaylist_successful() {
+
+      //Arrange
+      final Song song = buildSong();
+      final Playlist playlists = buildPlaylist();
+      playlists.setSongs(ImmutableList.of(song));
+      when(playlistDao.findById(VALID_ID)).thenReturn(Optional.of(playlists));
+
+      //Act
+      final List<Song> songs = playlistService.getSongsInPlaylist(VALID_ID);
+
+      //Assert
+      verify(playlistDao).findById(VALID_ID);
+      verifyNoMoreInteractions(playlistDao);
+      Assert.assertEquals(1, songs.size());
+      Assert.assertTrue(songs.contains(song));
+   }
+
+   @Test
+   public void testGetSongsInPlaylist_unsuccessful() {
+
+      //Arrange
+      when(playlistDao.findById(INVALID_ID)).thenReturn(Optional.empty());
+
+      try {
+         //Act
+         final List<Song> songs = playlistService.getSongsInPlaylist(INVALID_ID);
+         fail("Exception not thrown");
+      } catch (ApiException ex) {
+         //Assert
+         verify(playlistDao).findById(INVALID_ID);
+         verifyNoMoreInteractions(playlistDao);
+         Assert.assertEquals("Playlist not found", ex.getMessage());
+         Assert.assertEquals(ValidationError.NOT_FOUND, ex.getError());
+         Assert.assertTrue(ex.getFields().contains(PLAYLIST));
+      }
    }
 }

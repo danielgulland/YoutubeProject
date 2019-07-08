@@ -5,12 +5,18 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.Table;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Builder
 @Data
@@ -28,4 +34,8 @@ public class Song {
 
    @Column(unique = true)
    private String reference;
+
+   @JsonIgnore
+   @ManyToMany(mappedBy = "songs")
+   private List<Playlist> playlists = new ArrayList<>();
 }
