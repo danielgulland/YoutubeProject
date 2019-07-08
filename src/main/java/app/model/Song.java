@@ -5,7 +5,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.Column;
@@ -37,5 +36,5 @@ public class Song {
 
    @JsonIgnore
    @ManyToMany(mappedBy = "songs")
-   private List<Playlist> playlists = new ArrayList<>();
+   private List<Playlist> playlists;
 }

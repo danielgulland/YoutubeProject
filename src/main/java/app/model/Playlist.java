@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -64,5 +63,5 @@ public class Playlist {
    @ManyToMany(cascade = {CascadeType.ALL})
    @JoinTable(name = "playlist_song", joinColumns = {@JoinColumn(name = "playlist_id")},
          inverseJoinColumns = {@JoinColumn(name = "song_id")})
-   private List<Song> songs = new ArrayList<>();
+   private List<Song> songs;
 }
