@@ -16,6 +16,8 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import com.google.common.collect.ImmutableList;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -144,5 +146,39 @@ public class RoomControllerTest extends BaseTest {
 
       Assert.assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
       Assert.assertNull(response.getBody());
+   }
+
+   @Test
+   public void testGetRooms_GetRoomsWithFilter() {
+      //Arrange
+      final Room rooms = buildRoom();
+      when(roomService.getRoomsWithFilter(USERNAME)).thenReturn(ImmutableList.of(rooms));
+
+      //Act
+      final ResponseEntity responseEntity = roomController.getRooms(USERNAME);
+
+      //Assert
+      verify(roomService).getRoomsWithFilter(USERNAME);
+      verifyNoMoreInteractions(roomService);
+
+      Assert.assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+      Assert.assertNotNull(responseEntity.getBody());
+   }
+
+   @Test
+   public void testGetRooms_GetAllRooms() {
+      //Arrange
+      final Room rooms = buildRoom();
+      when(roomService.getAllRooms()).thenReturn(ImmutableList.of(rooms));
+
+      //Act
+      final ResponseEntity responseEntity = roomController.getRooms(INVALID_USERNAME);
+
+      //Assert
+      verify(roomService).getAllRooms();
+      verifyNoMoreInteractions(roomService);
+
+      Assert.assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+      Assert.assertNotNull(responseEntity.getBody());
    }
 }

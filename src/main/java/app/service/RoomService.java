@@ -5,6 +5,7 @@ import app.exception.ApiException;
 import app.model.Room;
 import app.validation.ValidationError;
 
+import java.util.List;
 import java.util.Optional;
 import app.model.Room;
 
@@ -26,6 +27,20 @@ public class RoomService {
     */
    public void createNewRoom(final Room room) {
       roomDao.save(room);
+   }
+
+   public List<Room> getAllRooms() {
+      return roomDao.findAll();
+   }
+
+   /**
+    * Service call to get a room by the name.
+    *
+    * @param name name of the room to filter for
+    * @return List of rooms that match the name
+    */
+   public List<Room> getRoomsWithFilter(final String name) {
+      return roomDao.findByNameStartingWith(name);
    }
 
    /**
