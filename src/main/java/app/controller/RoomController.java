@@ -2,6 +2,7 @@ package app.controller;
 
 import app.model.Room;
 import app.request.CreateRoomData;
+import app.request.UpdateRoomData;
 import app.service.RoomService;
 import app.validation.ValidationError;
 import app.validation.Validator;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -23,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import static app.constant.FieldConstants.ID;
 import static app.constant.FieldConstants.NAME;
+import static app.constant.FieldConstants.PLAYLIST_ID;
 
 @RestController
 @RequestMapping(path = "/rooms")
@@ -86,6 +89,26 @@ public class RoomController {
       }
 
       return ResponseEntity.status(HttpStatus.OK).body(rooms);
+   }
+
+   /**
+    * Update a Room by a room id.
+    *
+    * @param id room id
+    * @param updateRoomData contains information to update a room
+    * @return Response with status 200 and empty body for successful call, otherwise validation response
+    */
+   @PutMapping("/{id}")
+   public ResponseEntity updateRoomById(@PathVariable final int id,
+                                        @RequestBody final UpdateRoomData updateRoomData) {
+      if (validator.chain(id > 0, ValidationError.BAD_VALUE, ID)
+            .check(updateRoomData.getPlaylistId() > 0, ValidationError.BAD_VALUE, PLAYLIST_ID)) {
+         roomService.updateRoomById(id, updateRoomData);
+
+         return ResponseEntity.status(HttpStatus.OK).body(null);
+      }
+
+      return validator.getResponseEntity();
    }
 
    /**
