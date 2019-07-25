@@ -12,6 +12,7 @@ import app.request.CreateSongData;
 import app.request.PasswordResetData;
 import app.request.RegistrationData;
 import app.request.UpdatePlaylistData;
+import app.request.UpdateRoomData;
 import app.request.UpdateUserData;
 import app.validation.ValidationError;
 
@@ -210,5 +211,15 @@ public class BaseTest {
       passwordResetData.setToken(TOKEN);
       passwordResetData.setPassword(NEW_PASSWORD);
       return passwordResetData;
+   }
+
+   // Update Room
+   protected UpdateRoomData buildUpdateRoomData() {
+      final UpdateRoomData data = new UpdateRoomData();
+      data.setName(NAME);
+      data.setPlaylistId(VALID_ID);
+      data.setIsPrivate(false);
+
+      return data;
    }
 }

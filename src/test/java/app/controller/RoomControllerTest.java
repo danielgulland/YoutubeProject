@@ -3,6 +3,7 @@ package app.controller;
 import app.BaseTest;
 import app.model.Room;
 import app.request.CreateRoomData;
+import app.request.UpdateRoomData;
 import app.service.RoomService;
 import app.validation.ValidationError;
 import app.validation.Validator;
@@ -180,5 +181,49 @@ public class RoomControllerTest extends BaseTest {
 
       Assert.assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
       Assert.assertNotNull(responseEntity.getBody());
+   }
+
+   @Test
+   public void testUpdateRoomById_successful() {
+      //Arrange
+      when(validator.chain(true, ValidationError.BAD_VALUE, ID_FIELD)).thenReturn(validator);
+      when(validator.check(true, ValidationError.BAD_VALUE, PLAYLIST_ID)).thenReturn(true);
+
+      //Act
+      final UpdateRoomData updateRoomData = buildUpdateRoomData();
+      final ResponseEntity responseEntity = roomController.updateRoomById(VALID_ID, updateRoomData);
+
+      //Assert
+      verify(validator).chain(true, ValidationError.BAD_VALUE, ID_FIELD);
+      verify(validator).check(true, ValidationError.BAD_VALUE, PLAYLIST_ID);
+      verify(roomService).updateRoomById(VALID_ID, updateRoomData);
+      verifyNoMoreInteractions(validator);
+      verifyNoMoreInteractions(roomService);
+
+      Assert.assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+      Assert.assertNull(responseEntity.getBody());
+   }
+
+   @Test
+   public void testUpdateRoomById_unsuccessful() {
+      //Arrange
+      when(validator.chain(false, ValidationError.BAD_VALUE, ID_FIELD)).thenReturn(validator);
+      when(validator.check(false, ValidationError.BAD_VALUE, PLAYLIST_ID)).thenReturn(false);
+      when(validator.getResponseEntity()).thenReturn(buildResponseEntity(HttpStatus.BAD_REQUEST));
+
+      //Act
+      final UpdateRoomData updateRoomData = buildUpdateRoomData();
+      updateRoomData.setPlaylistId(0);
+      final ResponseEntity responseEntity = roomController.updateRoomById(INVALID_ID, updateRoomData);
+
+      //Assert
+      verify(validator).chain(false, ValidationError.BAD_VALUE, ID_FIELD);
+      verify(validator).check(false, ValidationError.BAD_VALUE, PLAYLIST_ID);
+      verify(validator).getResponseEntity();
+      verifyNoMoreInteractions(validator);
+      verifyZeroInteractions(roomService);
+
+      Assert.assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
+      Assert.assertNull(responseEntity.getBody());
    }
 }
