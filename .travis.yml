@@ -10,6 +10,8 @@ install: true
 jdk:
   - oraclejdk8
 
+dist: trusty
+
 services:
   - mysql
 
